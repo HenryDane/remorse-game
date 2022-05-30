@@ -5,10 +5,6 @@
 	A class which encapsulates a single map.
 */
 
-#define MAX_TEXTURE_ID 407
-#define SHEET_WIDTH    24
-#define SHEET_HEIGHT   17
-
 #include <vector>
 #include <string>
 #include <mutex>
@@ -16,6 +12,12 @@
 #include "entity.h"
 #include "portal.h"
 #include "dialogue.h"
+
+#define SHEET_WIDTH 24
+#define SHEET_HEIGHT 17
+#define MAX_TEXTURE_ID 407
+#define TILE_WIDTH 16
+#define TILE_HEIGHT 16
 
 class Map : public sf::Drawable, public sf::Transformable {
 public:
@@ -44,17 +46,24 @@ public:
 
     // play information
     bool is_collideable(int x, int y);
-    bool get_interaction(int x, int y, int& i);
+    bool get_interaction(int x, int y, Portal* portal, Dialogue* dialogue);
 
     // handle a tick
     void update(float dt);
+
+    // iterate over entities
+    std::vector<Entity*>::const_iterator begin();
+    std::vector<Entity*>::const_iterator end();
+
+    // entity functionality
+    void add_entity(Entity* entity);
 
     // draw
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
     // utility functions
     void setup_layer(uint16_t* layer, std::string& input);
-    void build_vert_array();
+    void build_tile_vert_array();
     void build_va_layer(std::vector<sf::Vertex>& v, uint16_t* layer);
 
     // non-tile data
@@ -73,7 +82,7 @@ private:
 	uint16_t* water;
 
 	// rendering tiles
-    std::vector<sf::Vertex> vertices;
+    std::vector<sf::Vertex> tile_vertices;
 };
 
 #endif

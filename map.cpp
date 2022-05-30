@@ -77,7 +77,7 @@ Map::Map(std::string path) {
         }
     }
 
-    this->build_vert_array();
+    this->build_tile_vert_array();
 }
 
 int Map::get_width() {
@@ -100,6 +100,70 @@ int Map::get_start_y() {
     return this->sy;
 }
 
+bool check_tile_type_collideable(uint16_t x) {
+    if (x == 11 || x == 12 || x == 13 || x == 14) {
+        return true;
+    }
+
+    if (x == 24 || x == 25 || x == 26 || x == 48 || x == 50 || x == 72 || x == 73 || x == 74) {
+        return true;
+    }
+
+    return false;
+}
+bool Map::is_collideable(int x, int y) {
+    if (x >= w || x < 0 || y >= h || y < 0) {
+        return true;
+    }
+
+    int water = this->water[y * w + x];
+    int ground = this->ground[y * w + x];
+    int border = this->border[y * w + x];
+
+    std::cout << "x=" << x << " y=" << y << " w=" << water << " g=" << ground << " b=" << border << std::endl;
+
+    if (check_tile_type_collideable(border)){
+        return true;
+    }
+
+    if (ground != 65535) {
+        return check_tile_type_collideable(ground);
+    } else {
+        return check_tile_type_collideable(water);
+    }
+}
+
+void Map::update(float dt) {
+    for (Entity* e : this->entities) {
+        e->animate(dt);
+    }
+}
+
+std::vector<Entity*>::const_iterator Map::begin() {
+    return this->entities.end();
+}
+
+std::vector<Entity*>::const_iterator Map::end() {
+    return this->entities.begin();
+}
+
+void Map::add_entity(Entity* entity) {
+    this->entities.push_back(entity);
+}
+
+void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    // apply the entity's transform -- combine it with the one that was passed by the caller
+    states.transform *= getTransform(); // getTransform() is defined by sf::Transformable
+
+    // draw the vertex array
+    target.draw(&tile_vertices[0], tile_vertices.size(), sf::Quads, states);
+
+    // iterate and draw each entity
+    for (Entity* e : this->entities) {
+        target.draw((*e), states);
+    }
+}
+
 void Map::setup_layer(uint16_t* layer, std::string& input) {
     // split the input string into a useable list
     std::vector<std::string> values = split_by_char(input, ',');
@@ -117,16 +181,16 @@ void Map::setup_layer(uint16_t* layer, std::string& input) {
     }
 }
 
-void Map::build_vert_array() {
-    vertices.clear();
+void Map::build_tile_vert_array() {
+    tile_vertices.clear();
 
-    build_va_layer(vertices, water);
-    build_va_layer(vertices, ground);
-    build_va_layer(vertices, border);
-    build_va_layer(vertices, decor);
+    build_va_layer(tile_vertices, water);
+    build_va_layer(tile_vertices, ground);
+    build_va_layer(tile_vertices, border);
+    build_va_layer(tile_vertices, decor);
 }
 
-void Map::build_va_layer(std::vector<sf::Vertex>& v, uint16_t* layer) {
+void Map::build_va_layer(std::vector<sf::Vertex>& vs, uint16_t* layer) {
     for (int i = 0; i < this->w; i++) {
         for (int j = 0; j < this->h; j++) {
             int t = layer[j * w + i];
@@ -135,19 +199,11 @@ void Map::build_va_layer(std::vector<sf::Vertex>& v, uint16_t* layer) {
             float x = i * 32;
             float y = j * 32;
             if (t < MAX_TEXTURE_ID) {
-                vertices.push_back(sf::Vertex(sf::Vector2(x, y), sf::Vector2(u, v)));
-                vertices.push_back(sf::Vertex(sf::Vector2(x + 32.0f, y), sf::Vector2(u + 16.0f, v)));
-                vertices.push_back(sf::Vertex(sf::Vector2(x + 32.0f, y + 32.0f), sf::Vector2(u + 16.0f, v + 16.0f)));
-                vertices.push_back(sf::Vertex(sf::Vector2(x, y + 32.0f), sf::Vector2(u, v + 16.0f)));
+                vs.push_back(sf::Vertex(sf::Vector2(x, y), sf::Vector2(u, v)));
+                vs.push_back(sf::Vertex(sf::Vector2(x + 32.0f, y), sf::Vector2(u + 16.0f, v)));
+                vs.push_back(sf::Vertex(sf::Vector2(x + 32.0f, y + 32.0f), sf::Vector2(u + 16.0f, v + 16.0f)));
+                vs.push_back(sf::Vertex(sf::Vector2(x, y + 32.0f), sf::Vector2(u, v + 16.0f)));
             }
         }
     }
-}
-
-void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    // apply the entity's transform -- combine it with the one that was passed by the caller
-    states.transform *= getTransform(); // getTransform() is defined by sf::Transformable
-
-    // draw the vertex array
-    target.draw(&vertices[0], vertices.size(), sf::Quads, states);
 }

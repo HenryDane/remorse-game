@@ -8,6 +8,22 @@
 #define SCREEN_W 800
 #define SCREEN_H 600
 
+void move_player(Map* current_map, Player& player, int dx, int dy) {
+    std::cout << "facing=" << player.get_facing() << " dx=" << dx << " dy=" << dy << std::endl;
+    if (!(player.get_facing() == Player::DOWN  && dx ==  0 && dy ==  1) &&
+        !(player.get_facing() == Player::UP    && dx ==  0 && dy == -1) &&
+        !(player.get_facing() == Player::RIGHT && dx ==  1 && dy ==  0) &&
+        !(player.get_facing() == Player::LEFT  && dx == -1 && dy ==  0)) {
+        std::cout << "facing wrong!" << std::endl;
+        player.set_facing(dx, dy);
+        return;
+    }
+
+    if (!current_map->is_collideable(player.get_x() + dx, player.get_y() + dy)) {
+        player.set_dxdy(dx, dy);
+    }
+}
+
 int main() {
     // create the window
     sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(SCREEN_W, SCREEN_H), "2D RPG");
@@ -55,21 +71,13 @@ int main() {
                 window.close();
             } else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::D) {
-                    if (!current_map->is_collideable(player.get_x() + 1, player.get_y())) {
-                        player.set_dxdy(1, 0);
-                    }
+                    move_player(current_map, player, 1, 0);
                 } else if (event.key.code == sf::Keyboard::A) {
-                    if (!current_map->is_collideable(player.get_x() - 1, player.get_y())) {
-                        player.set_dxdy(-1, 0);
-                    }
+                    move_player(current_map, player, -1, 0);
                 } else if (event.key.code == sf::Keyboard::W) {
-                    if (!current_map->is_collideable(player.get_x(), player.get_y() - 1)) {
-                        player.set_dxdy(0, -1);
-                    }
+                    move_player(current_map, player, 0, -1);
                 } else if (event.key.code == sf::Keyboard::S) {
-                    if (!current_map->is_collideable(player.get_x(), player.get_y() + 1)) {
-                        player.set_dxdy(0, 1);
-                    }
+                    move_player(current_map, player, 0, 1);
                 }
             } else if (event.type == sf::Event::Resized) {
                 window.setView(getLetterboxView( window.getView(), event.size.width, event.size.height ));

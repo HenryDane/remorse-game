@@ -10,7 +10,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#define ENTITY_DEFAULT_SPRITE 129
+#define ENTITY_DEFAULT_SPRITE 151
 
 class Entity : public sf::Drawable, public sf::Transformable {
 public:

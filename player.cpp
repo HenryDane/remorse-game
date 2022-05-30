@@ -15,10 +15,35 @@ void Player::set_health(float health) {
 void Player::set_dxdy(int dx, int dy) {
     this->set_x(this->get_x() + dx);
     this->set_y(this->get_y() + dy);
-    this->set_render_offset_x(-dx);
-    this->set_render_offset_y(-dy);
+    this->set_render_offset_x(-dx/2.0f);
+    this->set_render_offset_y(-dy/2.0f);
     this->dx = dx;
     this->dy = dy;
+}
+
+Player::Facing Player::get_facing() {
+    return this->facing;
+}
+
+void Player::set_facing(Facing facing) {
+    this->facing = facing;
+    this->set_sprite(this->facing);
+}
+
+void Player::set_facing(int dx, int dy) {
+    if (dx == 1 && dy == 0) {
+        this->facing = Player::RIGHT;
+    } else if (dx == -1 && dy == 0) {
+        this->facing = Player::LEFT;
+    } else if (dx == 0 && dy == 1) {
+        this->facing = Player::DOWN;
+    } else if (dx == 0 && dy == -1) {
+        this->facing = Player::UP;
+    } else {
+        this->facing = Player::DOWN;
+    }
+
+    this->set_sprite(this->facing);
 }
 
 float Player::get_render_x() {
@@ -43,6 +68,7 @@ void Player::animate(float dt) {
     float rx = this->get_render_offset_x();
     float ry = this->get_render_offset_y();
 
+    // set the offsets
     if (rx * dx < 0) {
         this->set_render_offset_x(rx + dt * dx);
     }

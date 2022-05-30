@@ -4,9 +4,7 @@
 #include "player.h"
 #include "item.h"
 #include "util.h"
-
-#define SCREEN_W 800
-#define SCREEN_H 600
+#include "config.h"
 
 void move_player(Map* current_map, Player& player, int dx, int dy) {
     std::cout << "facing=" << player.get_facing() << " dx=" << dx << " dy=" << dy << std::endl;

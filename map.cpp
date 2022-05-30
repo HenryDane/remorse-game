@@ -194,15 +194,15 @@ void Map::build_va_layer(std::vector<sf::Vertex>& vs, uint16_t* layer) {
     for (int i = 0; i < this->w; i++) {
         for (int j = 0; j < this->h; j++) {
             int t = layer[j * w + i];
-            float u = (t % SHEET_WIDTH) * 16;
-            float v = (t / SHEET_WIDTH) * 16;
-            float x = i * 32;
-            float y = j * 32;
+            float u = (t % SHEET_WIDTH) * TILE_SIZE;
+            float v = (t / SHEET_WIDTH) * TILE_SIZE;
+            float x = i * TILE_RENDER_SIZE;
+            float y = j * TILE_RENDER_SIZE;
             if (t < MAX_TEXTURE_ID) {
                 vs.push_back(sf::Vertex(sf::Vector2(x, y), sf::Vector2(u, v)));
-                vs.push_back(sf::Vertex(sf::Vector2(x + 32.0f, y), sf::Vector2(u + 16.0f, v)));
-                vs.push_back(sf::Vertex(sf::Vector2(x + 32.0f, y + 32.0f), sf::Vector2(u + 16.0f, v + 16.0f)));
-                vs.push_back(sf::Vertex(sf::Vector2(x, y + 32.0f), sf::Vector2(u, v + 16.0f)));
+                vs.push_back(sf::Vertex(sf::Vector2(x + TILE_RENDER_SIZE, y), sf::Vector2(u + TILE_SIZE, v)));
+                vs.push_back(sf::Vertex(sf::Vector2(x + TILE_RENDER_SIZE, y + TILE_RENDER_SIZE), sf::Vector2(u + TILE_SIZE, v + TILE_SIZE)));
+                vs.push_back(sf::Vertex(sf::Vector2(x, y + TILE_RENDER_SIZE), sf::Vector2(u, v + TILE_SIZE)));
             }
         }
     }

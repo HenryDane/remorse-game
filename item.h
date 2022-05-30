@@ -7,9 +7,11 @@ class Item {
 public:
     enum Type {
         NONE = 129,
-        BERRIES = 398, APPLE = 372, CHERRY = 345,
-        BOTTLE = 103, MILK = 105,
-        LOG = 61, STICK = 60
+        // generic items
+        BERRIES = 398, APPLE = 372, TOMATO = 345,
+        BOTTLE = 103, HALF_MILK = 14,MILK = 105, PLANT = 106
+        LOG = 61, STICK = 60, ROCK = 59
+        WHEAT_SEEDS = 316, TOMATO_SEEDS = 340
     };
 
     Item(Type t);

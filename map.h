@@ -12,12 +12,7 @@
 #include "entity.h"
 #include "portal.h"
 #include "dialogue.h"
-
-#define SHEET_WIDTH 24
-#define SHEET_HEIGHT 17
-#define MAX_TEXTURE_ID 407
-#define TILE_WIDTH 16
-#define TILE_HEIGHT 16
+#include "config.h"
 
 class Map : public sf::Drawable, public sf::Transformable {
 public:

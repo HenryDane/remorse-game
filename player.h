@@ -2,13 +2,15 @@
 #define _PLAYER_H
 
 #include "entity.h"
-
-#define PLAYER_DEFAULT_SPRITE 84
+#include "config.h"
 
 class Player : public Entity {
 public:
     enum Facing {
-        UP = 129, DOWN = 152, LEFT = 128, RIGHT = 153
+        UP = PLAYER_FACING_UP,
+        DOWN = PLAYER_FACING_DOWN,
+        LEFT = PLAYER_FACING_LEFT,
+        RIGHT = PLAYER_FACING_RIGHT
     };
     Player(int x, int y, float health) : Entity(x, y, Entity::PLAYER) {
         this->health = health;

@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "config.h"
 
 Entity::Entity() {
     this->x = -1;
@@ -84,8 +85,8 @@ float Entity::get_render_offset_y() {
 }
 
 void Entity::build_vert_array() {
-    float u = (sprite % 24) * 16;
-    float v = (sprite / 24) * 16;
+    float u = (sprite % SHEET_WIDTH) * TILE_SIZE;
+    float v = (sprite / SHEET_WIDTH) * TILE_SIZE;
 
     float mx, my;
     if (this->t == Entity::PLAYER) {
@@ -96,8 +97,8 @@ void Entity::build_vert_array() {
         my = y + ry;
     }
 
-    vertices[0] = sf::Vertex(sf::Vector2f(mx * 32.0f, my * 32.0f), sf::Vector2f(u, v));
-    vertices[1] = sf::Vertex(sf::Vector2f((mx + 1) * 32.0f, my * 32.0f), sf::Vector2f(u + 16, v));
-    vertices[2] = sf::Vertex(sf::Vector2f((mx + 1) * 32.0f, (my + 1) * 32.0f), sf::Vector2f(u + 16, v + 16));
-    vertices[3] = sf::Vertex(sf::Vector2f(mx * 32.0f, (my + 1) * 32.0f), sf::Vector2f(u, v + 16));
+    vertices[0] = sf::Vertex(sf::Vector2f(mx * TILE_RENDER_SIZE, my * TILE_RENDER_SIZE), sf::Vector2f(u, v));
+    vertices[1] = sf::Vertex(sf::Vector2f((mx + 1) * TILE_RENDER_SIZE, my * TILE_RENDER_SIZE), sf::Vector2f(u + TILE_SIZE, v));
+    vertices[2] = sf::Vertex(sf::Vector2f((mx + 1) * TILE_RENDER_SIZE, (my + 1) * TILE_RENDER_SIZE), sf::Vector2f(u + TILE_SIZE, v + TILE_SIZE));
+    vertices[3] = sf::Vertex(sf::Vector2f(mx * TILE_RENDER_SIZE, (my + 1) * TILE_RENDER_SIZE), sf::Vector2f(u, v + TILE_SIZE));
 }

@@ -5,6 +5,7 @@
 #include "item.h"
 #include "util.h"
 #include "config.h"
+#include "hud.h"
 
 void move_player(Map* current_map, Player& player, int dx, int dy) {
     std::cout << "facing=" << player.get_facing() << " dx=" << dx << " dy=" << dy << std::endl;
@@ -37,7 +38,7 @@ int main() {
 
     // load spritesheet
     sf::Texture spritesheet;
-    if (!spritesheet.loadFromFile("asset/sprites.png")) {
+    if (!spritesheet.loadFromFile("asset/spritesheet.png")) {
         std::cout << "Unable to load spritesheet." << std::endl;
         exit(1090);
     }
@@ -46,20 +47,38 @@ int main() {
     sf::Sprite sprite;
     sprite.setTexture(spritesheet);
 
+    // setup font
+    sf::Font font;
+    if (!font.loadFromFile("asset/telegrama_raw.ttf")) {
+        std::cout << "Cound not find font: telegrama_raw.ttf" << std::endl;
+        exit(0);
+    }
+
+    // setup HUD elements
+    HUD hud(font, spritesheet);
+
+    // setup item data registry
+    ItemData itemdata("asset/items.txt");
+
     // get the player ready
     Player player(13, 10, 100.0f);
-    ItemEntity* test_item = new ItemEntity(10, 10, Item(Item::MILK));
 
     // load a temporary map
-    Map* current_map = new Map("result.map");
-    current_map->add_entity(test_item);
+    Map* current_map = new Map("debug.map");
 
     // create renderstate
     sf::RenderStates render_state(&spritesheet);
 
+    // track frame time
+    sf::Clock clock;
+
     while (window.isOpen()) {
         // clear the window
         window.clear();
+
+        // get delta time
+        sf::Time elapsed = clock.restart();
+        float delta_time = elapsed.asSeconds();
 
         // process events
         sf::Event event;
@@ -83,15 +102,18 @@ int main() {
         }
 
         // update the map
-        current_map->update(0.01667f);
+        current_map->update(delta_time);
 
         // draw the map
         current_map->setPosition((10 - player.get_render_x()) * 32, (7 - player.get_render_y()) * 32);
         window.draw(*current_map, render_state);
 
         // draw the player
-        player.animate(0.01667f);
+        player.animate(delta_time);
         window.draw(player, render_state);
+
+        // draw the hud
+        hud.draw(window, player);
 
         // finish the frame
         window.display();

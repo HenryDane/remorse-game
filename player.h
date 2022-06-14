@@ -3,6 +3,11 @@
 
 #include "entity.h"
 #include "config.h"
+#include "item.h"
+
+#define PLAYER_INV_IDX_START 7
+#define NUM_PLAYER_INV_SLOTS 5
+#define NUM_PLAYER_INV_TOTAL 7 + NUM_PLAYER_INV_SLOTS
 
 class Player : public Entity {
 public:
@@ -19,13 +24,23 @@ public:
     }
     ~Player();
 
-    // player-specific
+    // living-specific
     float get_health();
     void set_health(float health);
+
+    // moveable-specific
     void set_dxdy(int dx, int dy);
     Facing get_facing();
     void set_facing(Facing facing);
     void set_facing(int dx, int dy);
+
+    // inventoried-specific
+    int get_num_items();
+    Item& get_item_at(int idx, bool& found);
+    bool add_item(Item item);
+    bool remove_item(Item& item);
+    bool remove_item(std::string name);
+    bool remove_item(int idx);
 
     // special rendering stuff
     float get_render_x();
@@ -37,6 +52,7 @@ private:
     float health;
     float time;
     int dx, dy;
+    Item items[NUM_PLAYER_INV_TOTAL];
 };
 
 #endif

@@ -14,7 +14,7 @@ public:
 
         text = sf::Text("HP: 100 / 100", font);
         text.setPosition(16, 16);
-        text.setColor(sf::Color::White);
+        text.setFillColor(sf::Color::White);
         text.setCharacterSize(16);
 
         sprite = sf::Sprite(_texture);

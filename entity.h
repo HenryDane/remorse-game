@@ -21,16 +21,17 @@ public:
 	virtual ~Entity();
 
 	// position
-	float get_x();
-	float get_y();
+	float get_x() const;
+	float get_y() const;
 	void set_x(float x);
 	void set_y(float y);
 
 	// type info
-	virtual Type get_type();
+	virtual Type get_type() const;
+	bool is_solid() const;
 
 	// texture info
-	int get_sprite();
+	int get_sprite() const;
 	void set_sprite(int sprite);
 
 	// handle updates
@@ -44,6 +45,8 @@ protected:
     void set_render_offset_y(float y);
     float get_render_offset_x();
     float get_render_offset_y();
+
+    bool solid;
 private:
     void build_vert_array();
 

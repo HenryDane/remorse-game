@@ -8,9 +8,14 @@
 
 #define INVALID_ITEM_NAME "__invalid__"
 
+enum class ItemType {
+    NONE, ITEM, CONSUMABLE, ARMOR, WEAPON
+};
+
 struct item_def_t {
     std::string name;
     int sprite;
+    ItemType type;
 
     // properties
     int hp, atk, def, spd;
@@ -20,11 +25,6 @@ class Item;
 
 class ItemData {
 public:
-    // item type enum
-    enum Type {
-        NONE, ITEM, CONSUMABLE, EQUIPPABLE, WEAPON
-    };
-
     // constructors and destructor
     ItemData(std::string path);
     ItemData(ItemData const&) = delete;
@@ -38,6 +38,7 @@ public:
     // item info
     int get_sprite(Item& item);
     int get_sprite(std::string& name);
+    bool is_item_defined(std::string name);
 
     // get instance
     static ItemData& inst();
@@ -50,39 +51,47 @@ public:
     Item();
     virtual ~Item();
 
-    ItemData::Type get_type();
+    ItemType get_type();
     int get_count();
     void set_count(int n);
     std::string get_name();
 
     bool is_equal(Item& item) const;
+    bool is_stackable(Item& item) const;
     void make_invalid();
 private:
     friend class ItemData;
 
-    // only itemdata can instantiate this
-    Item(ItemData::Type t, int n, std::string name);
+    Item(std::string name, int n, ItemType type);
 
     // fields
     std::string name;
-    ItemData::Type t;
+    ItemType t;
     int n;
 };
 
 class ItemEntity : public Entity {
 public:
     ItemEntity(int x, int y, Item item) : Entity(x, y, Entity::ITEM), item(item) {
-//        this->set_sprite(item.get_type());
+        this->set_sprite(ItemData::inst().get_sprite(item));
+        this->pickup_remaining = 3.0f;
+    };
+    ItemEntity(int x, int y, Item item, float pickup_delay) : Entity(x, y, Entity::ITEM), item(item) {
+        this->set_sprite(ItemData::inst().get_sprite(item));
+        this->pickup_remaining = pickup_delay;
     };
     ~ItemEntity();
 
     // item specific
     Item& get_item();
+    void make_invalid();
+
+    bool is_pickup_ok();
 
     // override
     void animate(float dt);
 private:
-    float time;
+    float time, pickup_remaining;
     Item item;
 };
 

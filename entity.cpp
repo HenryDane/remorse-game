@@ -7,6 +7,7 @@ Entity::Entity() {
     this->t = Entity::NONE;
     this->rx = 0.0f;
     this->ry = 0.0f;
+    this->solid = false;
     this->build_vert_array();
 }
 
@@ -16,6 +17,7 @@ Entity::Entity(float x, float y, Type t) {
     this->t = t;
     this->rx = 0.0f;
     this->ry = 0.0f;
+    this->solid = false;
     this->build_vert_array();
 }
 
@@ -23,11 +25,11 @@ Entity::~Entity() {
 
 }
 
-float Entity::get_x() {
+float Entity::get_x() const {
     return this->x;
 }
 
-float Entity::get_y() {
+float Entity::get_y() const {
     return this->y;
 }
 
@@ -41,11 +43,15 @@ void Entity::set_y(float y) {
     this->build_vert_array();
 }
 
-Entity::Type Entity::get_type() {
+Entity::Type Entity::get_type() const {
     return this->t;
 }
 
-int Entity::get_sprite() {
+bool Entity::is_solid() const {
+    return solid;
+}
+
+int Entity::get_sprite() const {
     return this->sprite;
 }
 

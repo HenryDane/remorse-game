@@ -18,9 +18,9 @@ void HUD::draw(sf::RenderTarget& target, Player& player) {
     target.draw(text);
     text.setString("8:14.000");
     text.setPosition(496, 32);
-    text.setColor(sf::Color::Green);
+    text.setFillColor(sf::Color::Green);
     target.draw(text);
-    text.setColor(sf::Color::White);
+    text.setFillColor(sf::Color::White);
 
     text.setCharacterSize(8);
 
@@ -56,4 +56,11 @@ void HUD::draw_item(sf::RenderTarget& target, Item& item, float x, float y) {
     sprite.setPosition(x, y);
     sprite.setTextureRect(sf::IntRect(u, v, TILE_SIZE, TILE_SIZE));
     target.draw(sprite);
+
+    sprintf(tmp, "%d", item.get_count());
+    text.setString(tmp);
+    text.setCharacterSize(8);
+    sf::FloatRect fr = text.getLocalBounds();
+    text.setPosition(x + 32 - fr.width, y + 30 - fr.height);
+    target.draw(text);
 }

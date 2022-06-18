@@ -6,22 +6,8 @@
 #include "util.h"
 #include "config.h"
 #include "hud.h"
-
-void move_player(Map* current_map, Player& player, int dx, int dy) {
-    std::cout << "facing=" << player.get_facing() << " dx=" << dx << " dy=" << dy << std::endl;
-    if (!(player.get_facing() == Player::DOWN  && dx ==  0 && dy ==  1) &&
-        !(player.get_facing() == Player::UP    && dx ==  0 && dy == -1) &&
-        !(player.get_facing() == Player::RIGHT && dx ==  1 && dy ==  0) &&
-        !(player.get_facing() == Player::LEFT  && dx == -1 && dy ==  0)) {
-        std::cout << "facing wrong!" << std::endl;
-        player.set_facing(dx, dy);
-        return;
-    }
-
-    if (!current_map->is_collideable(player.get_x() + dx, player.get_y() + dy)) {
-        player.set_dxdy(dx, dy);
-    }
-}
+#include "invrenderer.h"
+#include "game.h"
 
 int main() {
     // create the window
@@ -49,7 +35,7 @@ int main() {
 
     // setup font
     sf::Font font;
-    if (!font.loadFromFile("asset/telegrama_raw.ttf")) {
+    if (!font.loadFromFile("asset/telegrama_render.otf")) {
         std::cout << "Cound not find font: telegrama_raw.ttf" << std::endl;
         exit(0);
     }
@@ -60,11 +46,12 @@ int main() {
     // setup item data registry
     ItemData itemdata("asset/items.txt");
 
-    // get the player ready
-    Player player(13, 10, 100.0f);
+    // setup the game
+    Game game("asset/startup.txt", font);
 
-    // load a temporary map
-    Map* current_map = new Map("debug.map");
+    // setup inventory renderer
+    InvRenderer invrenderer(font, spritesheet, game.get_player());
+    invrenderer.set_map(game.get_current_map());
 
     // create renderstate
     sf::RenderStates render_state(&spritesheet);
@@ -72,6 +59,7 @@ int main() {
     // track frame time
     sf::Clock clock;
 
+    // main loop
     while (window.isOpen()) {
         // clear the window
         window.clear();
@@ -88,32 +76,48 @@ int main() {
                 window.close();
             } else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::D) {
-                    move_player(current_map, player, 1, 0);
+                    game.move_player(1, 0);
                 } else if (event.key.code == sf::Keyboard::A) {
-                    move_player(current_map, player, -1, 0);
+                    game.move_player(-1, 0);
                 } else if (event.key.code == sf::Keyboard::W) {
-                    move_player(current_map, player, 0, -1);
+                    game.move_player(0, -1);
                 } else if (event.key.code == sf::Keyboard::S) {
-                    move_player(current_map, player, 0, 1);
+                    game.move_player(0, 1);
+                } else if (event.key.code == sf::Keyboard::I) {
+                    invrenderer.toggle();
+                } else if (event.key.code == sf::Keyboard::Escape) {
+                    invrenderer.hide();
+                }
+
+                else if (event.key.code == sf::Keyboard::Q) {
+                    game.get_player().add_item(ItemData::inst().make_item("Plant"));
+                } else if (event.key.code == sf::Keyboard::E) {
+                    game.get_player().add_item(ItemData::inst().make_item("Golden Armor"));
+                } else if (event.key.code == sf::Keyboard::R) {
+                    game.get_player().add_item(ItemData::inst().make_item("Wheat Seeds", 10));
+                } else if (event.key.code == sf::Keyboard::T) {
+                    game.get_player().add_item(ItemData::inst().make_item("Tomato Seeds", 7));
                 }
             } else if (event.type == sf::Event::Resized) {
                 window.setView(getLetterboxView( window.getView(), event.size.width, event.size.height ));
+            } else if (event.type == sf::Event::MouseButtonReleased) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    invrenderer.on_mouse_click(window, event.mouseButton.x, event.mouseButton.y);
+                }
+            } else if (event.type == sf::Event::MouseMoved) {
+                invrenderer.on_mouse_move(window, event.mouseMove.x, event.mouseMove.y);
+                game.on_mouse_move(window, event.mouseMove.x, event.mouseMove.y);
             }
         }
 
-        // update the map
-        current_map->update(delta_time);
-
-        // draw the map
-        current_map->setPosition((10 - player.get_render_x()) * 32, (7 - player.get_render_y()) * 32);
-        window.draw(*current_map, render_state);
-
-        // draw the player
-        player.animate(delta_time);
-        window.draw(player, render_state);
+        // render game
+        game.draw(window, render_state, delta_time);
 
         // draw the hud
-        hud.draw(window, player);
+        hud.draw(window, game.get_player());
+
+        // draw the inventory
+        invrenderer.draw(window);
 
         // finish the frame
         window.display();

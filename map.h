@@ -40,18 +40,19 @@ public:
     void get_decor(int x, int y);
 
     // play information
+    Entity* get_entity_overlap(int x, int y);
     bool is_collideable(int x, int y);
     bool get_interaction(int x, int y, Portal* portal, Dialogue* dialogue);
 
     // handle a tick
     void update(float dt);
 
-    // iterate over entities
-    std::vector<Entity*>::const_iterator begin();
-    std::vector<Entity*>::const_iterator end();
-
     // entity functionality
+    int get_n_entities();
+    Entity* get_entity_at(int idx);
     void add_entity(Entity* entity);
+    void remove_entity(int idx);
+    void flush_null();
 
     // draw
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

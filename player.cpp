@@ -62,7 +62,13 @@ Item& Player::get_item_at(int idx, bool& found) {
 */
 bool Player::add_item(Item item) {
     for (int i = PLAYER_INV_IDX_START; i < this->get_num_items(); i++) {
-        if (items[i].get_type() == ItemData::NONE) {
+        if (items[i].is_stackable(item)) {
+            items[i].set_count(items[i].get_count() + item.get_count());
+            return true;
+        }
+    }
+    for (int i = PLAYER_INV_IDX_START; i < this->get_num_items(); i++) {
+        if (items[i].get_type() == ItemType::NONE) {
             items[i] = item;
             return true;
         }
@@ -115,8 +121,6 @@ float Player::get_render_y() {
 }
 
 void Player::animate(float dt) {
-    const float epsilon = 0.1;
-
     // speed it up
     dt *= 6;
 

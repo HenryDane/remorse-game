@@ -3,16 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
-
-std::vector<std::string> split_by_char(std::string in, char split) {
-    std::stringstream stream(in);
-    std::vector<std::string> tokens;
-    std::string token;
-    while(std::getline(stream, token, split)) {
-        tokens.push_back(token);
-    }
-    return tokens;
-}
+#include "util.h"
 
 Map::Map(std::string path) {
     // open .map file
@@ -139,16 +130,26 @@ void Map::update(float dt) {
     }
 }
 
-std::vector<Entity*>::const_iterator Map::begin() {
-    return this->entities.end();
+int Map::get_n_entities() {
+    return this->entities.size();
 }
 
-std::vector<Entity*>::const_iterator Map::end() {
-    return this->entities.begin();
+Entity* Map::get_entity_at(int idx) {
+    return this->entities[idx];
 }
 
 void Map::add_entity(Entity* entity) {
     this->entities.push_back(entity);
+    std::cout << "num=" << entities.size() << std::endl;
+}
+
+void Map::remove_entity(int idx) {
+    delete this->entities[idx];
+    this->entities[idx] = nullptr;
+}
+
+void Map::flush_null() {
+    this->entities.erase(std::remove(this->entities.begin(), this->entities.end(), nullptr), this->entities.end());
 }
 
 void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const {

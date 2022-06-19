@@ -42,7 +42,8 @@ public:
     // play information
     Entity* get_entity_overlap(int x, int y);
     bool is_collideable(int x, int y);
-    bool get_interaction(int x, int y, Portal* portal, Dialogue* dialogue);
+    bool get_portal(int x, int y, Portal** portal);
+    bool get_dialogue(int x, int y, Dialogue** dialogue);
 
     // handle a tick
     void update(float dt);
@@ -59,6 +60,8 @@ public:
 private:
     // utility functions
     void setup_layer(uint16_t* layer, std::string& input);
+    void setup_start(std::string& input);
+    void setup_portal(std::string& input);
     void build_tile_vert_array();
     void build_va_layer(std::vector<sf::Vertex>& v, uint16_t* layer);
 

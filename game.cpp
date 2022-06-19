@@ -1,9 +1,9 @@
 #include "game.h"
 #include <iostream>
+#include <fstream>
 #include "util.h"
 
 Game::Game(std::string path, sf::Font& _f) : font(_f), player(13, 13, 100.0f) {
-    current_map = new Map("untitled.map");
     xoff = 10;
     yoff = 7;
 
@@ -13,6 +13,49 @@ Game::Game(std::string path, sf::Font& _f) : font(_f), player(13, 13, 100.0f) {
     text.setPosition(100, 100);
 
     draw_label = false;
+
+    // parse input file
+    std::ifstream startfile(path);
+    if (!startfile.is_open()) {
+        std::cout << "ERROR: failed to open startfile! " << std::endl;
+        exit(1022);
+    }
+
+    int line_num = 1;
+    for (std::string line; getline(startfile, line); line_num++) {
+        std::vector<std::string> tokens = split_by_char(line, ';');
+
+        if (tokens.size() <= 0) {
+            continue;
+        }
+
+        if (tokens[0] == "MAP") {
+            // make sure we have right number of elements!
+            if (tokens.size() != 2) {
+                std::cout << "ERROR: Malformed map defined on line: " << line_num << std::endl;
+                exit(910);
+            }
+
+            // load the map
+            Map* m = new Map(tokens[1]);
+            maps[m->get_name()] = m;
+        } else if (tokens[0] == "START") {
+            // check for the right number of elements
+            if (tokens.size() != 2) {
+                std::cout << "ERROR: Malformed starting map entry on line: " << line_num << std::endl;
+                exit(911);
+            }
+
+            // try to set the map
+            if (maps.find(tokens[1]) == maps.end()) {
+                std::cout << "ERROR: Requested map does not exist: " << tokens[1] << std::endl;
+                exit(912);
+            }
+
+            // set the map
+            current_map = maps[tokens[1]];
+        }
+    }
 }
 
 void Game::draw(sf::RenderTarget& target, sf::RenderStates& state, float dt) {
@@ -62,6 +105,27 @@ void Game::move_player(int dx, int dy) {
     current_map->flush_null();
     if (has_collided) {
         return;
+    }
+
+    Portal* portal;
+    if (current_map->get_portal(player.get_x() + dx,
+                                player.get_y() + dy,
+                                &portal)) {
+        // check if the destination map exists
+        std::cout << "HIT PORTAL" << std::endl;
+        if (maps.find(portal->get_name()) == maps.end()) {
+            std::cout << "WARNING: Got bad map name from portal: " << portal->get_name() << std::endl;
+        } else {
+            current_map = maps[portal->get_name()];
+            if ((portal->get_target_x() == -1) ||
+                (portal->get_target_y() == -1)) {
+                player.set_x(current_map->get_start_x());
+                player.set_y(current_map->get_start_y());
+            } else {
+                player.set_x(portal->get_target_x());
+                player.set_y(portal->get_target_y());
+            }
+        }
     }
 
     if (!current_map->is_collideable(player.get_x() + dx, player.get_y() + dy)) {

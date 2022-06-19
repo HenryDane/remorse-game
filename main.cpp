@@ -12,7 +12,7 @@
 int main() {
     // create the window
     sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(SCREEN_W, SCREEN_H), "2D RPG");
-    window.setKeyRepeatEnabled(false);
+    window.setKeyRepeatEnabled(true);
     window.setFramerateLimit(60);
 
     // create the rendertexture

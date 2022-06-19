@@ -65,6 +65,10 @@ Map::Map(std::string path) {
             this->setup_layer(decor, tokens[1]);
         } else if (tokens[0] == "BORDER") {
             this->setup_layer(border, tokens[1]);
+        } else if (tokens[0] == "START") {
+            this->setup_start(tokens[1]);
+        } else if (tokens[0] == "PORTAL") {
+            this->setup_portal(tokens[1]);
         }
     }
 
@@ -124,6 +128,21 @@ bool Map::is_collideable(int x, int y) {
     }
 }
 
+bool Map::get_portal(int x, int y, Portal** portal) {
+    for (Portal* p : portals) {
+        std::cout << "portal n=" << p->get_name() << " x=" << p->get_x() << " y=" << p->get_y() << std::endl;
+        std::cout << "       w=" << p->get_w() << " h=" << p->get_h() << std::endl;
+        if ((p->get_x() <= x) && (p->get_y() <= y) &&
+            (p->get_x() + p->get_w() > x) &&
+            (p->get_y() + p->get_h() > y)) {
+            (*portal) = p;
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void Map::update(float dt) {
     for (Entity* e : this->entities) {
         e->animate(dt);
@@ -180,6 +199,29 @@ void Map::setup_layer(uint16_t* layer, std::string& input) {
             layer[i] = d - 1;
         }
     }
+}
+
+void Map::setup_start(std::string& input) {
+    std::vector<std::string> values = split_by_char(input, ',');
+
+    if (values.size() != 2) {
+        std::cout << "ERROR: Got invalid START marker in map!" << std::endl;
+        exit(1029);
+    }
+
+    sx = std::stoi(values[0]);
+    sy = std::stoi(values[1]);
+}
+
+void Map::setup_portal(std::string& input) {
+    std::vector<std::string> values = split_by_char(input, ',');
+
+    Portal* p = new Portal(values[0],
+                           std::stoi(values[3]) / 16, std::stoi(values[4]) / 16,
+                           std::stoi(values[5]) / 16, std::stoi(values[6]) / 16,
+                           std::stoi(values[1]), std::stoi(values[2]));
+
+    this->portals.push_back(p);
 }
 
 void Map::build_tile_vert_array() {

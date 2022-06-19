@@ -65,11 +65,9 @@ ItemData::ItemData(std::string path) {
     // read line by line
     int line_num = 1;
     for (std::string line; getline(itemfile, line); ) {
-        std::cout << line_num << "\t|" << line << std::endl;
         std::vector<std::string> tokens = split_by_char(line, ';');
 
         if (tokens.size() <= 0) {
-            std::cout << "\t|SKIPPED" << std::endl;
             continue;
         }
 
@@ -81,7 +79,6 @@ ItemData::ItemData(std::string path) {
             }
 
             // make the item
-            std::cout << "\t|ADD: " << tokens[1] << std::endl;
             item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]), ItemType::ITEM,
                                     0, 0, 0, 0};
         } else if (tokens[0] == "ARMOR") {
@@ -95,7 +92,6 @@ ItemData::ItemData(std::string path) {
             _item_prop_t props = make_properties(tokens[3]);
 
             // make the item
-            std::cout << "\t|ADD: " << tokens[1] << std::endl;
             item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]), ItemType::ARMOR,
                                     props.hp, props.atk, props.def, props.spd};
         } else if (tokens[0] == "WEAPON") {
@@ -109,7 +105,6 @@ ItemData::ItemData(std::string path) {
             _item_prop_t props = make_properties(tokens[3]);
 
             // make the item
-            std::cout << "\t|ADD: " << tokens[1] << std::endl;
             item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]), ItemType::WEAPON,
                                     props.hp, props.atk, props.def, props.spd};
         } else if (tokens[0] == "CONSUMABLE") {
@@ -123,13 +118,14 @@ ItemData::ItemData(std::string path) {
             _item_prop_t props = make_properties(tokens[3]);
 
             // make the item
-            std::cout << "\t|ADD: " << tokens[1] << std::endl;
             item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]), ItemType::CONSUMABLE,
                                     props.hp, props.atk, props.def, props.spd};
         }
 
         line_num++;
     }
+
+    itemfile.close();
 }
 
 ItemData::~ItemData() {

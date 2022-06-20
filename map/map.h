@@ -9,10 +9,10 @@
 #include <string>
 #include <mutex>
 #include <SFML/Graphics.hpp>
-#include "entity.h"
+#include "../entity/entity.h"
 #include "portal.h"
 #include "dialogue.h"
-#include "config.h"
+#include "../config.h"
 
 class Map : public sf::Drawable, public sf::Transformable {
 public:
@@ -62,6 +62,8 @@ private:
     void setup_layer(uint16_t* layer, std::string& input);
     void setup_start(std::string& input);
     void setup_portal(std::string& input);
+    void setup_chest(std::string& input);
+    void parse_decor();
     void build_tile_vert_array();
     void build_va_layer(std::vector<sf::Vertex>& v, uint16_t* layer);
 

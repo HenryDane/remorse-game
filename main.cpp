@@ -1,12 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "map.h"
+#include "map/map.h"
 #include "player.h"
-#include "item.h"
 #include "util.h"
 #include "config.h"
-#include "hud.h"
-#include "invrenderer.h"
+#include "guis/hud.h"
+#include "guis/invrenderer.h"
 #include "game.h"
 
 int main() {
@@ -36,7 +35,7 @@ int main() {
     // setup font
     sf::Font font;
     if (!font.loadFromFile("asset/telegrama_render.otf")) {
-        std::cout << "Cound not find font: telegrama_raw.ttf" << std::endl;
+        std::cout << "Could not find font: telegrama_raw.ttf" << std::endl;
         exit(0);
     }
 

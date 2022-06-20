@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include "util.h"
+#include "../util.h"
 
 /*
 ===============================================================================
@@ -147,6 +147,16 @@ Item ItemData::make_item(std::string name, int n) {
     } else {
         return Item();
     }
+}
+
+ItemEntity* ItemData::make_item_from_sprite(uint16_t t) {
+    for (const auto& [key, value] : this->item_defs) {
+        if (value.sprite == t) {
+            return new ItemEntity(-1, -1, make_item(key, 1));
+        }
+    }
+
+    return nullptr;
 }
 
 // item info

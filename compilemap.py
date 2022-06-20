@@ -24,7 +24,7 @@ def all_equal(x: list):
 	return x.count(x[0]) == len(x)
     
 # collect all layers' data
-objdat = {'portals' : [], 'dialogue' : [], 'startx' : 0, 'starty' : 0}
+objdat = {'portals' : [], 'dialogue' : [], 'chests' : [], 'startx' : 0, 'starty' : 0}
 layers = {}
 xdims = []
 ydims = []
@@ -52,6 +52,11 @@ for i, l in enumerate(j['layers']):
 						portal['target_y'] = props['target_y']
 				elif o['type'] == 'DIALOGUE':
 					print('Warning: DIALOGUE objects are not yet supported')
+				elif o['type'] == 'CHEST':
+					chest = {'x': o['x'] // 16, 'y' : o['y'] // 16, 'type' : o['gid'] - 1, 'loot': []}
+					for p in props:
+						chest['loot'].append({'item':p,'value':props[p]})
+					objdat['chests'].append(chest)
 		continue
 	xdims.append(l['width'])
 	ydims.append(l['height'])
@@ -89,12 +94,22 @@ for l in layers:
 # write start position
 r.write('START;' + str(int(objdat['startx'])) + ',' + str(int(objdat['starty'])) + '\n')
 
-# TODO: write portals/entities/doors
+# write portals/entities/doors
 for portal in objdat['portals']:
     r.write('PORTAL;' + str(portal['target']) + ',' + str(portal['target_x']) + ',' + str(portal['target_y']))
     r.write(',' + str(int(round(portal['x']))) + ',' + str(int(round(portal['y']))) + ',')
     r.write(str(int(round(portal['w']))) + ',' + str(int(round(portal['h']))) + '\n')
 
+# write chests
+# CHEST;10,10,Golden Armor:10:100%|
+for chest in objdat['chests']:
+	r.write('CHEST;' + str(chest['x']) + ',' + str(chest['y']) + ',' + str(chest['type']) + ',')
+	for i, l in enumerate(chest['loot']):
+		r.write(l['item'] + ':' + l['value'])
+		if (i != len(chest['loot']) - 1):
+			r.write('|')
+	r.write('\n')
+	
 # save map
 r.close()
 

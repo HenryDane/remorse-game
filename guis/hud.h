@@ -2,7 +2,7 @@
 #define _HUD_H
 
 #include <SFML/Graphics.hpp>
-#include "player.h"
+#include "../player.h"
 
 class HUD {
 public:

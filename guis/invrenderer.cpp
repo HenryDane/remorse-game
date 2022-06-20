@@ -1,6 +1,6 @@
 #include "invrenderer.h"
 #include <iostream>
-#include "util.h"
+#include "../util.h"
 
 void InvRenderer::show() {
     active = true;

@@ -9,12 +9,12 @@
 */
 
 #include <SFML/Graphics.hpp>
-#include "config.h"
+#include "../config.h"
 
 class Entity : public sf::Drawable, public sf::Transformable {
 public:
 	enum Type {
-		NONE, PLAYER, ITEM
+		NONE, PLAYER, ITEM, CHEST
 	};
 	Entity();
 	Entity(float x, float y, Type t);
@@ -29,6 +29,8 @@ public:
 	// type info
 	virtual Type get_type() const;
 	bool is_solid() const;
+	bool is_interactable() const;
+	virtual std::string get_interact_name() const;
 
 	// texture info
 	int get_sprite() const;
@@ -46,7 +48,7 @@ protected:
     float get_render_offset_x();
     float get_render_offset_y();
 
-    bool solid;
+    bool solid, interactable;
 private:
     void build_vert_array();
 

@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include "player.h"
-#include "map.h"
+#include "map/map.h"
 
 class Game {
 public:

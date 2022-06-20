@@ -3,7 +3,9 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
-#include "util.h"
+#include "../util.h"
+#include "../entity/item.h"
+#include "../entity/chest.h"
 
 Map::Map(std::string path) {
     // open .map file
@@ -63,12 +65,15 @@ Map::Map(std::string path) {
             this->setup_layer(water, tokens[1]);
         } else if (tokens[0] == "DECORATION") {
             this->setup_layer(decor, tokens[1]);
+            this->parse_decor();
         } else if (tokens[0] == "BORDER") {
             this->setup_layer(border, tokens[1]);
         } else if (tokens[0] == "START") {
             this->setup_start(tokens[1]);
         } else if (tokens[0] == "PORTAL") {
             this->setup_portal(tokens[1]);
+        } else if (tokens[0] == "CHEST") {
+            this->setup_chest(tokens[1]);
         }
     }
 
@@ -216,12 +221,49 @@ void Map::setup_start(std::string& input) {
 void Map::setup_portal(std::string& input) {
     std::vector<std::string> values = split_by_char(input, ',');
 
+    if (values.size() != 7) {
+        std::cout << "ERROR: Got invalid PORTAL token in map!" << std::endl;
+        exit(1030);
+    }
+
     Portal* p = new Portal(values[0],
                            std::stoi(values[3]) / 16, std::stoi(values[4]) / 16,
                            std::stoi(values[5]) / 16, std::stoi(values[6]) / 16,
                            std::stoi(values[1]), std::stoi(values[2]));
 
     this->portals.push_back(p);
+}
+
+void Map::setup_chest(std::string& input) {
+    std::vector<std::string> values = split_by_char(input, ',');
+
+    if (values.size() != 4) {
+        std::cout << "ERROR: Got invalid CHEST token in map!" << std::endl;
+        exit(999);
+    }
+
+    // decode position
+    float x = std::stof(values[0]);
+    float y = std::stof(values[1]);
+    int type = std::stoi(values[2]);
+
+    ChestEntity* ce = new ChestEntity(x, y, type, values[3]);
+    this->entities.push_back(ce);
+}
+
+void Map::parse_decor() {
+    for (int i = 0; i < this->w; i++) {
+        for (int j = 0; j < this->h; j++) {
+            uint16_t t = this->decor[i + (j * w)];
+            ItemEntity* ie = ItemData::inst().make_item_from_sprite(t);
+            if (ie != nullptr) {
+                this->decor[i + (j * w)] = 0;
+                ie->set_x(i);
+                ie->set_y(j);
+                this->entities.push_back(ie);
+            }
+        }
+    }
 }
 
 void Map::build_tile_vert_array() {

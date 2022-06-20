@@ -1,14 +1,8 @@
 #include "entity.h"
-#include "config.h"
+#include "../config.h"
 
 Entity::Entity() {
-    this->x = -1;
-    this->y = -1;
-    this->t = Entity::NONE;
-    this->rx = 0.0f;
-    this->ry = 0.0f;
-    this->solid = false;
-    this->build_vert_array();
+    Entity(-1, -1, Type::NONE);
 }
 
 Entity::Entity(float x, float y, Type t) {
@@ -18,6 +12,7 @@ Entity::Entity(float x, float y, Type t) {
     this->rx = 0.0f;
     this->ry = 0.0f;
     this->solid = false;
+    this->interactable = true;
     this->build_vert_array();
 }
 
@@ -49,6 +44,14 @@ Entity::Type Entity::get_type() const {
 
 bool Entity::is_solid() const {
     return solid;
+}
+
+bool Entity::is_interactable() const {
+    return interactable;
+}
+
+std::string Entity::get_interact_name() const {
+    return "<invalid entity>";
 }
 
 int Entity::get_sprite() const {

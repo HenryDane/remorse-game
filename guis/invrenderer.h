@@ -2,8 +2,8 @@
 #define _INV_RENDERER_H
 
 #include <SFML/Graphics.hpp>
-#include "player.h"
-#include "map.h"
+#include "../player.h"
+#include "../map/map.h"
 
 class InvRenderer {
 public:

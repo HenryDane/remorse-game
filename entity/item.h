@@ -22,6 +22,7 @@ struct item_def_t {
 };
 
 class Item;
+class ItemEntity;
 
 class ItemData {
 public:
@@ -34,6 +35,7 @@ public:
     // create items
     Item make_item(std::string name);
     Item make_item(std::string name, int n);
+    ItemEntity* make_item_from_sprite(uint16_t spr);
 
     // item info
     int get_sprite(Item& item);

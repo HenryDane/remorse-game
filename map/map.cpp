@@ -6,6 +6,8 @@
 #include "../util.h"
 #include "../entity/item.h"
 #include "../entity/chest.h"
+#include "../entity/door.h"
+#include "../entity/switch.h"
 
 Map::Map(std::string path) {
     // open .map file
@@ -32,7 +34,8 @@ Map::Map(std::string path) {
         std::vector<std::string> tokens = split_by_char(line, ';');
 
         // make sure we got what we expected
-        if (tokens.size() != 2) {
+        // TODO: make our bounds checking smarter
+        if (tokens.size() != 3 && tokens.size() != 2) {
             std::cout << "MALFORMED TOKEN IN FILE: " << tokens[0] << std::endl;
             exit(1032);
         }
@@ -71,9 +74,13 @@ Map::Map(std::string path) {
         } else if (tokens[0] == "START") {
             this->setup_start(tokens[1]);
         } else if (tokens[0] == "PORTAL") {
-            this->setup_portal(tokens[1]);
+            this->setup_portal(tokens[2], tokens[1]);
         } else if (tokens[0] == "CHEST") {
-            this->setup_chest(tokens[1]);
+            this->setup_chest(tokens[2], tokens[1]);
+        } else if (tokens[0] == "DOOR") {
+            this->setup_door(tokens[2], tokens[1]);
+        } else if (tokens[0] == "SWITCH") {
+            this->setup_switch(tokens[2], tokens[1]);
         }
     }
 
@@ -120,8 +127,6 @@ bool Map::is_collideable(int x, int y) {
     int ground = this->ground[y * w + x];
     int border = this->border[y * w + x];
 
-    std::cout << "x=" << x << " y=" << y << " w=" << water << " g=" << ground << " b=" << border << std::endl;
-
     if (check_tile_type_collideable(border)){
         return true;
     }
@@ -135,8 +140,6 @@ bool Map::is_collideable(int x, int y) {
 
 bool Map::get_portal(int x, int y, Portal** portal) {
     for (Portal* p : portals) {
-        std::cout << "portal n=" << p->get_name() << " x=" << p->get_x() << " y=" << p->get_y() << std::endl;
-        std::cout << "       w=" << p->get_w() << " h=" << p->get_h() << std::endl;
         if ((p->get_x() <= x) && (p->get_y() <= y) &&
             (p->get_x() + p->get_w() > x) &&
             (p->get_y() + p->get_h() > y)) {
@@ -218,11 +221,12 @@ void Map::setup_start(std::string& input) {
     sy = std::stoi(values[1]);
 }
 
-void Map::setup_portal(std::string& input) {
+void Map::setup_portal(std::string& input, std::string& name) {
     std::vector<std::string> values = split_by_char(input, ',');
 
     if (values.size() != 7) {
         std::cout << "ERROR: Got invalid PORTAL token in map!" << std::endl;
+        std::cout << input << std::endl;
         exit(1030);
     }
 
@@ -232,9 +236,11 @@ void Map::setup_portal(std::string& input) {
                            std::stoi(values[1]), std::stoi(values[2]));
 
     this->portals.push_back(p);
+
+    // TODO: handle named portals???
 }
 
-void Map::setup_chest(std::string& input) {
+void Map::setup_chest(std::string& input, std::string& name) {
     std::vector<std::string> values = split_by_char(input, ',');
 
     if (values.size() != 4) {
@@ -244,11 +250,97 @@ void Map::setup_chest(std::string& input) {
 
     // decode position
     float x = std::stof(values[0]);
-    float y = std::stof(values[1]);
+    float y = std::stof(values[1]) - 1;
     int type = std::stoi(values[2]);
 
     ChestEntity* ce = new ChestEntity(x, y, type, values[3]);
     this->entities.push_back(ce);
+
+    // check entity name
+    if (name != "_") {
+        this->named_entities[name] = ce;
+    }
+}
+
+void Map::setup_door(std::string& input, std::string& name) {
+    std::vector<std::string> values = split_by_char(input, ',');
+
+    if (values.size() != 6) {
+        std::cout << "ERROR: Got invalid DOOR token in map!" << std::endl;
+        exit(993);
+    }
+
+    // decode position
+    float x = std::stof(values[0]);
+    float y = std::stof(values[1]) - 1;
+    int type = std::stoi(values[2]);
+    int alt = std::stoi(values[3]);
+    bool toggleable = std::stoi(values[5]) > 0;
+
+    // figure out trigger
+    std::vector<std::string> trigs = split_by_char(values[4], ':');
+    DoorEntity::TriggerType trig_type = DoorEntity::TriggerType::NONE;
+    std::string trigger;
+    if (trigs.size() == 2) {
+        if (trigs[0] == "switch") {
+            trig_type = DoorEntity::TriggerType::SWITCH;
+            trigger = trigs[1];
+        } else if (trigs[0] == "key") {
+            trig_type = DoorEntity::TriggerType::ITEM;
+            trigger = trigs[1];
+        } else {
+            std::cout << "Warning: Unexpected trigger value for door, defaulting to NONE." << std::endl;
+            trig_type = DoorEntity::TriggerType::NONE;
+        }
+    } else {
+        trig_type = DoorEntity::TriggerType::NONE;
+    }
+
+    // instantiate door and save it
+    DoorEntity* de = new DoorEntity(x, y, type, alt, trig_type, trigger, toggleable);
+    this->entities.push_back(de);
+
+    // check entity name
+    if (name != "_") {
+        this->named_entities[name] = de;
+    }
+}
+
+void Map::setup_switch(std::string& input, std::string& name) {
+    std::vector<std::string> values = split_by_char(input, ',');
+
+    if (values.size() != 6) {
+        std::cout << "ERROR: Got invalid DOOR token in map!" << std::endl;
+        exit(993);
+    }
+
+    // decode params
+    float x = std::stof(values[0]);
+    float y = std::stof(values[1]) - 1;
+    int type = std::stoi(values[2]);
+    int alt = std::stoi(values[3]);
+    bool rq_prev = values[4] != "_";
+    int reset_counter = std::stoi(values[5]);
+
+    // instantiate switch and save it
+    SwitchEntity* se = new SwitchEntity(x, y, type, alt, rq_prev, values[4], reset_counter);
+    this->entities.push_back(se);
+
+    // check entity name
+    if (name != "_") {
+        this->named_entities[name] = se;
+    }
+}
+
+void Map::setup_trap(std::string& input, std::string& name) {
+    std::vector<std::string> values = split_by_char(input, ',');
+
+    if (values.size() != 9) {
+        std::cout << "ERROR: Got invalid DOOR token in map!" << std::endl;
+        exit(993);
+    }
+
+    // TODO: instantiate trap and save it
 }
 
 void Map::parse_decor() {

@@ -61,8 +61,11 @@ private:
     // utility functions
     void setup_layer(uint16_t* layer, std::string& input);
     void setup_start(std::string& input);
-    void setup_portal(std::string& input);
-    void setup_chest(std::string& input);
+    void setup_portal(std::string& input, std::string& name);
+    void setup_chest(std::string& input, std::string& name);
+    void setup_door(std::string& input, std::string& name);
+    void setup_switch(std::string& input, std::string& name);
+    void setup_trap(std::string& input, std::string& name);
     void parse_decor();
     void build_tile_vert_array();
     void build_va_layer(std::vector<sf::Vertex>& v, uint16_t* layer);
@@ -71,6 +74,10 @@ private:
 	std::vector<Entity*> entities;
 	std::vector<Portal*> portals;
 	std::vector<Dialogue*> dialogue;
+
+	// named entity information
+	// (all entities contained herein are ALSO contained in the entities list)
+	std::unordered_map<std::string, Entity*> named_entities;
 
 	// metadata
 	std::string name;

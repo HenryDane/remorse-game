@@ -14,7 +14,8 @@
 class Entity : public sf::Drawable, public sf::Transformable {
 public:
 	enum Type {
-		NONE, PLAYER, ITEM, CHEST
+		NONE, PLAYER, ITEM, CHEST,
+		DOOR, SWITCH, TRAP
 	};
 	Entity();
 	Entity(float x, float y, Type t);
@@ -35,6 +36,9 @@ public:
 	// texture info
 	int get_sprite() const;
 	void set_sprite(int sprite);
+
+	// handle triggers
+	virtual void on_trigger(Entity::Type type, std::string& name);
 
 	// handle updates
 	virtual void animate(float dt);

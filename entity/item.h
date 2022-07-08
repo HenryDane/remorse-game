@@ -77,10 +77,12 @@ public:
     ItemEntity(int x, int y, Item item) : Entity(x, y, Entity::ITEM), item(item) {
         this->set_sprite(ItemData::inst().get_sprite(item));
         this->pickup_remaining = 3.0f;
+        this->time = 0.0f;
     };
     ItemEntity(int x, int y, Item item, float pickup_delay) : Entity(x, y, Entity::ITEM), item(item) {
         this->set_sprite(ItemData::inst().get_sprite(item));
         this->pickup_remaining = pickup_delay;
+        this->time = 0.0f;
     };
     ~ItemEntity();
 

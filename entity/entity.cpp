@@ -63,6 +63,11 @@ void Entity::set_sprite(int sprite) {
     this->build_vert_array();
 }
 
+void Entity::on_trigger(Entity::Type type, std::string& name) {
+    // do nothing
+    return;
+}
+
 void Entity::animate(float dt) {
     return;
 }

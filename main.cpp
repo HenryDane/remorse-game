@@ -34,7 +34,7 @@ int main() {
 
     // setup font
     sf::Font font;
-    if (!font.loadFromFile("asset/telegrama_render.otf")) {
+    if (!font.loadFromFile("asset/telegrama_raw.ttf")) {
         std::cout << "Could not find font: telegrama_raw.ttf" << std::endl;
         exit(0);
     }

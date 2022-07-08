@@ -59,6 +59,7 @@ Game::Game(std::string path, sf::Font& _f) : font(_f), player(13, 13, 100.0f) {
 }
 
 void Game::draw(sf::RenderTarget& target, sf::RenderStates& state, float dt) {
+
     // update the map
     current_map->update(dt);
 
@@ -76,12 +77,10 @@ void Game::draw(sf::RenderTarget& target, sf::RenderStates& state, float dt) {
 }
 
 void Game::move_player(int dx, int dy) {
-    std::cout << "facing=" << player.get_facing() << " dx=" << dx << " dy=" << dy << std::endl;
     if (!(player.get_facing() == Player::DOWN  && dx ==  0 && dy ==  1) &&
         !(player.get_facing() == Player::UP    && dx ==  0 && dy == -1) &&
         !(player.get_facing() == Player::RIGHT && dx ==  1 && dy ==  0) &&
         !(player.get_facing() == Player::LEFT  && dx == -1 && dy ==  0)) {
-        std::cout << "facing wrong!" << std::endl;
         player.set_facing(dx, dy);
         return;
     }
@@ -91,7 +90,6 @@ void Game::move_player(int dx, int dy) {
     for (int i = 0; i < current_map->get_n_entities(); i++) {
         Entity* e = current_map->get_entity_at(i);
         if (e == nullptr) continue;
-        std::cout << "entity e=" << e << std::endl;
         if (e->get_x() == player.get_x() + dx &&
             e->get_y() == player.get_y() + dy) {
             if (e->is_solid()) {
@@ -112,7 +110,6 @@ void Game::move_player(int dx, int dy) {
                                 player.get_y() + dy,
                                 &portal)) {
         // check if the destination map exists
-        std::cout << "HIT PORTAL" << std::endl;
         if (maps.find(portal->get_name()) == maps.end()) {
             std::cout << "WARNING: Got bad map name from portal: " << portal->get_name() << std::endl;
         } else {
@@ -150,7 +147,6 @@ void Game::on_mouse_move(sf::RenderWindow& window, float x, float y) {
             text.setPosition(sf::Vector2f(ex + (32 - fr.width) / 2.0f,
                                           ey + 32));
             draw_label = true;
-            std::cout << "intersected!" << std::endl;
         }
     }
 }
@@ -166,7 +162,6 @@ Player& Game::get_player() {
 bool Game::handle_entity_collide(Entity* entity) {
     if (entity->get_type() == Entity::ITEM) {
         ItemEntity* ie = (ItemEntity*) entity;
-        std::cout << "hit item with name: " << ie->get_item().get_name() << std::endl;
         if (!ie->is_pickup_ok()) {
             return false;
         }

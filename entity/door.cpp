@@ -28,10 +28,6 @@ bool DoorEntity::is_toggleable() {
     return toggleable;
 }
 
-void DoorEntity::on_trigger(Entity::Type type, std::string& name) {
-    // TODO: handle door triggers
-}
-
 DoorEntity::TriggerType DoorEntity::get_trigger_type() {
     return trig_type;
 }

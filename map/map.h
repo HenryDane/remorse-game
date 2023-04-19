@@ -54,6 +54,10 @@ public:
     void add_entity(Entity* entity);
     void remove_entity(int idx);
     void flush_null();
+    std::unordered_map<std::string, Entity*>& get_named_entities();
+
+    // trigger stuff
+    std::pair<std::multimap<std::string, Entity*>::iterator, std::multimap<std::string, Entity*>::iterator> get_triggers_for_entity(std::string& name);
 
     // draw
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -69,6 +73,7 @@ private:
     void parse_decor();
     void build_tile_vert_array();
     void build_va_layer(std::vector<sf::Vertex>& v, uint16_t* layer);
+    void generate_trigger_table();
 
     // non-tile data
 	std::vector<Entity*> entities;
@@ -78,6 +83,7 @@ private:
 	// named entity information
 	// (all entities contained herein are ALSO contained in the entities list)
 	std::unordered_map<std::string, Entity*> named_entities;
+	std::multimap<std::string, Entity*> trigger_table;
 
 	// metadata
 	std::string name;

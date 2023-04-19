@@ -30,9 +30,6 @@ public:
     bool is_open();
     bool is_toggleable();
 
-    // handle triggers
-    void on_trigger(Entity::Type type, std::string& name);
-
     // trigger information
     TriggerType get_trigger_type();
     std::string& get_trigger_value();

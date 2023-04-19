@@ -37,9 +37,6 @@ public:
 	int get_sprite() const;
 	void set_sprite(int sprite);
 
-	// handle triggers
-	virtual void on_trigger(Entity::Type type, std::string& name);
-
 	// handle updates
 	virtual void animate(float dt);
 

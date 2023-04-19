@@ -128,6 +128,24 @@ void Game::move_player(int dx, int dy) {
     if (!current_map->is_collideable(player.get_x() + dx, player.get_y() + dy)) {
         player.set_dxdy(dx, dy);
     }
+
+    //iterate through named entities and check intersection
+    for (auto& entry : current_map->get_named_entities()) {
+        Entity* entity = entry.second;
+        std::string name = entry.first;
+        // if overlap
+        if (entity->get_x() == player.get_x() + dx &&
+            entity->get_y() == player.get_y()) {
+            // get all linked entities
+            std::pair<std::multimap<std::string, Entity*>::iterator, std::multimap<std::string, Entity*>::iterator> rit =
+                current_map->get_triggers_for_entity(name);
+            std::multimap<std::string, Entity*>::iterator it;
+            for (it = rit.first; it != rit.second; it++) {
+                // process each linked entity
+                Entity* e = (*it).second;
+            }
+        }
+    }
 }
 
 void Game::on_mouse_move(sf::RenderWindow& window, float x, float y) {

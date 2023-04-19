@@ -16,7 +16,7 @@ public:
         this->reset_counter = reset_counter;
         this->prev = prev;
 
-        this->m_pressed = true;
+        this->m_pressed = false;
     }
     ~SwitchEntity() { };
 
@@ -25,9 +25,6 @@ public:
     void unpress();
     void toggle();
     bool is_pressed();
-
-    // handle triggers
-    void on_trigger(Entity::Type type, std::string& name);
 private:
     // render info
     int type, alt;

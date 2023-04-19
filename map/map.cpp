@@ -8,6 +8,7 @@
 #include "../entity/chest.h"
 #include "../entity/door.h"
 #include "../entity/switch.h"
+#include "../entity/trap.h"
 
 Map::Map(std::string path) {
     // open .map file
@@ -81,6 +82,8 @@ Map::Map(std::string path) {
             this->setup_door(tokens[2], tokens[1]);
         } else if (tokens[0] == "SWITCH") {
             this->setup_switch(tokens[2], tokens[1]);
+        } else if (tokens[0] == "TRAP") {
+            this->setup_trap(tokens[2], tokens[1]);
         }
     }
 
@@ -177,6 +180,14 @@ void Map::remove_entity(int idx) {
 
 void Map::flush_null() {
     this->entities.erase(std::remove(this->entities.begin(), this->entities.end(), nullptr), this->entities.end());
+}
+
+std::unordered_map<std::string, Entity*>& Map::get_named_entities() {
+    return this->named_entities;
+}
+
+std::pair<std::multimap<std::string, Entity*>::iterator, std::multimap<std::string, Entity*>::iterator> Map::get_triggers_for_entity(std::string& name) {
+    return trigger_table.equal_range(name);
 }
 
 void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -340,7 +351,26 @@ void Map::setup_trap(std::string& input, std::string& name) {
         exit(993);
     }
 
-    // TODO: instantiate trap and save it
+    // decode params
+    float x = std::stof(values[0]);
+    float y = std::stof(values[1]) - 1;
+    int type = std::stoi(values[2]);
+    int alt = std::stoi(values[3]);
+    int dmg = std::stoi(values[4]);
+    int dx = std::stoi(values[5]);
+    int dy = std::stoi(values[6]);
+
+    bool has_arm = (values[7] != "_");
+    bool has_disarm = (values[8] != "_");
+
+    // instantiate trap and save it
+    TrapEntity* te = new TrapEntity(x, y, type, alt, dmg, dx, dy, has_arm, values[7], has_disarm, values[8]);
+    this->entities.push_back(te);
+
+    // check entity name
+    if (name != "_") {
+        this->named_entities[name] = te;
+    }
 }
 
 void Map::parse_decor() {

@@ -45,7 +45,7 @@ void InvRenderer::on_mouse_click(sf::RenderWindow& window, float x, float y) {
     int idx = -1;
 
     if (intersect_rect(mouse.x, mouse.y, 116, 215, 32, 32) &&
-        ((dragged.get_type() == ItemType::ARMOR) ||
+        ((dragged.get_type() == ItemType::HELMET) ||
           dragged.get_type() == ItemType::NONE)) {
         idx = 0;
     } else if (intersect_rect(mouse.x, mouse.y, 116, 280, 32, 32) &&

@@ -9,7 +9,7 @@
 #define INVALID_ITEM_NAME "__invalid__"
 
 enum class ItemType {
-    NONE, ITEM, CONSUMABLE, ARMOR, WEAPON
+    NONE, ITEM, CONSUMABLE, ARMOR, WEAPON, HELMET
 };
 
 struct item_def_t {

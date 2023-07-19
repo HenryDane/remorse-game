@@ -94,7 +94,20 @@ ItemData::ItemData(std::string path) {
             // make the item
             item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]), ItemType::ARMOR,
                                     props.hp, props.atk, props.def, props.spd};
-        } else if (tokens[0] == "WEAPON") {
+        } else if (tokens[0] == "HELMET") {
+            // check that we have the right number of elements
+            if (tokens.size() != 4) {
+                std::cout << "ERROR: Malformed item definition on line: " << line_num << std::endl;
+                exit(1042);
+            }
+
+            // get the properties
+            _item_prop_t props = make_properties(tokens[3]);
+
+            // make the item
+            item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]), ItemType::HELMET,
+                                    props.hp, props.atk, props.def, props.spd};
+        }else if (tokens[0] == "WEAPON") {
             // check that we have the right number of elements
             if (tokens.size() != 4) {
                 std::cout << "ERROR: Malformed item definition on line: " << line_num << std::endl;
@@ -126,6 +139,12 @@ ItemData::ItemData(std::string path) {
     }
 
     itemfile.close();
+
+    std::cout << "Loaded items: ";
+    for (auto& [name, item] : item_defs) {
+        std::cout << "[" << name << "] ";
+    }
+    std::cout << std::endl;
 }
 
 ItemData::~ItemData() {
@@ -137,6 +156,7 @@ Item ItemData::make_item(std::string name) {
     if (is_item_defined(name)) {
         return Item(name, 1, item_defs[name].type);
     } else {
+        std::cout << "Warning: Item undefined: " << name << std::endl;
         return Item();
     }
 }
@@ -145,6 +165,7 @@ Item ItemData::make_item(std::string name, int n) {
     if (is_item_defined(name)) {
         return Item(name, n, item_defs[name].type);
     } else {
+        std::cout << "Warning: Item undefined: " << name << std::endl;
         return Item();
     }
 }
@@ -221,7 +242,9 @@ bool Item::is_equal(Item& item) const {
 
 bool Item::is_stackable(Item& item) const {
     // TODO: remove this if
-    if ((this->t == ItemType::ARMOR) | (this->t == ItemType::WEAPON)) {
+    if ((this->t == ItemType::ARMOR) |
+        (this->t == ItemType::HELMET) |
+        (this->t == ItemType::WEAPON)) {
         return false;
     }
     return (this->t == item.get_type()) &&

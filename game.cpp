@@ -12,6 +12,14 @@ Game::Game(std::string path, sf::Font& _f) : font(_f), player(13, 13, 100.0f) {
     text.setFillColor(sf::Color::White);
     text.setPosition(100, 100);
 
+    interact_text = sf::Text("E: __invalid__", font);
+    interact_text.setCharacterSize(16);
+    interact_text.setFillColor(sf::Color::Black);
+    {
+    sf::FloatRect r = interact_text.getLocalBounds();
+    interact_text.setPosition((SCREEN_W - r.width / 2), 500);
+    }
+
     draw_label = false;
 
     // parse input file
@@ -59,7 +67,6 @@ Game::Game(std::string path, sf::Font& _f) : font(_f), player(13, 13, 100.0f) {
 }
 
 void Game::draw(sf::RenderTarget& target, sf::RenderStates& state, float dt) {
-
     // update the map
     current_map->update(dt);
 
@@ -74,6 +81,46 @@ void Game::draw(sf::RenderTarget& target, sf::RenderStates& state, float dt) {
     if (draw_label) {
         target.draw(text);
     }
+
+    if (draw_interact) {
+        target.draw(interact_text);
+    }
+}
+
+void Game::check_interact() {
+    int dx = 0; int dy = 0;
+
+    switch (player.get_facing()) {
+    case Player::Facing::DOWN:
+        dy = 1;
+        break;
+    case Player::Facing::LEFT:
+        dx = -1;
+        break;
+    case Player::Facing::RIGHT:
+        dx = 1;
+        break;
+    case Player::Facing::UP:
+        dy = -1;
+        break;
+    }
+
+    draw_interact = false;
+    for (int i = 0; i < current_map->get_n_entities(); i++) {
+        Entity* e = current_map->get_entity_at(i);
+        if (e == nullptr) continue;
+        if (e->get_x() == player.get_x() + dx &&
+            e->get_y() == player.get_y() + dy) {
+            if (e->is_interactable()) {
+                interact_text.setString("E: " + e->get_interact_name());
+                sf::FloatRect r = interact_text.getLocalBounds();
+                interact_text.setPosition((SCREEN_W - r.width) / 2, 500);
+                draw_interact = true;
+                std::cout << "interact_text=" << interact_text.getString().toAnsiString() << std::endl;
+                break;
+            }
+        }
+    }
 }
 
 void Game::move_player(int dx, int dy) {
@@ -82,6 +129,7 @@ void Game::move_player(int dx, int dy) {
         !(player.get_facing() == Player::RIGHT && dx ==  1 && dy ==  0) &&
         !(player.get_facing() == Player::LEFT  && dx == -1 && dy ==  0)) {
         player.set_facing(dx, dy);
+        this->check_interact();
         return;
     }
 
@@ -98,16 +146,12 @@ void Game::move_player(int dx, int dy) {
             CollideResult cres = handle_entity_collide(e);
             if (cres == CollideResult::DELETE) {
                 current_map->remove_entity(i);
-            } else if (cres == CollideResult::INTERACT) {
-                if (e->get_type() == Entity::Type::CHEST) {
-                    cinvr->set_chest((ChestEntity*) e);
-                    cinvr->show();
-                }
             }
         }
     }
     current_map->flush_null();
     if (has_collided) {
+        this->check_interact();
         return;
     }
 
@@ -152,6 +196,8 @@ void Game::move_player(int dx, int dy) {
             }
         }
     }
+
+    this->check_interact();
 }
 
 void Game::on_mouse_move(sf::RenderWindow& window, float x, float y) {
@@ -171,6 +217,38 @@ void Game::on_mouse_move(sf::RenderWindow& window, float x, float y) {
             text.setPosition(sf::Vector2f(ex + (32 - fr.width) / 2.0f,
                                           ey + 32));
             draw_label = true;
+        }
+    }
+}
+
+void Game::try_interact() {
+    int dx = 0; int dy = 0;
+
+    switch (player.get_facing()) {
+    case Player::Facing::DOWN:
+        dy = 1;
+        break;
+    case Player::Facing::LEFT:
+        dx = -1;
+        break;
+    case Player::Facing::RIGHT:
+        dx = 1;
+        break;
+    case Player::Facing::UP:
+        dy = -1;
+        break;
+    }
+
+    for (int i = 0; i < current_map->get_n_entities(); i++) {
+        Entity* e = current_map->get_entity_at(i);
+        if (e == nullptr) continue;
+        if (e->get_x() == player.get_x() + dx &&
+            e->get_y() == player.get_y() + dy) {
+
+            if (e->get_type() == Entity::Type::CHEST) {
+                cinvr->set_chest((ChestEntity*) e);
+                cinvr->show();
+            }
         }
     }
 }
@@ -195,11 +273,6 @@ Game::CollideResult Game::handle_entity_collide(Entity* entity) {
                 ie->make_invalid();
                 return CollideResult::DELETE;
             }
-        }
-        break;
-    case Entity::Type::CHEST:
-        {
-            return CollideResult::INTERACT;
         }
         break;
     default:

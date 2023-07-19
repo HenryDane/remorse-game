@@ -12,7 +12,7 @@ Entity::Entity(float x, float y, Type t) {
     this->rx = 0.0f;
     this->ry = 0.0f;
     this->solid = false;
-    this->interactable = true;
+    this->interactable = false;
     this->build_vert_array();
 }
 

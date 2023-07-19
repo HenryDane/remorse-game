@@ -19,6 +19,7 @@ public:
     // input functions
     void move_player(int dx, int dy);
     void on_mouse_move(sf::RenderWindow& window, float x, float y);
+    void try_interact();
 
     // access functions
     Map* get_current_map();
@@ -32,11 +33,13 @@ private:
     };
     // internal action stuff
     CollideResult handle_entity_collide(Entity* entity);
+    void check_interact();
 
     // references and render info
     sf::Font& font;
     sf::Text text;
-    bool draw_label;
+    sf::Text interact_text;
+    bool draw_label, draw_interact;
     ChestInvRenderer* cinvr;
 
     // game data

@@ -48,6 +48,12 @@ int main() {
     // setup the game
     Game game("asset/startup.txt", font);
 
+    // FOR TESTING ONLY
+    game.get_player().add_item(ItemData::inst().make_item("Plant"));
+    game.get_player().add_item(ItemData::inst().make_item("Golden Armor"));
+    game.get_player().add_item(ItemData::inst().make_item("Wheat Seeds", 10));
+    game.get_player().add_item(ItemData::inst().make_item("Tomato Seeds", 7));
+
     // setup inventory renderer
     InvRenderer invrenderer(font, spritesheet, game.get_player());
     invrenderer.set_map(game.get_current_map());
@@ -100,16 +106,8 @@ int main() {
                     cinvrenderer.set_chest(nullptr);
                 } else if (event.key.code == sf::Keyboard::C) {
                     cinvrenderer.toggle();
-                }
-
-                else if (event.key.code == sf::Keyboard::Q) {
-                    game.get_player().add_item(ItemData::inst().make_item("Plant"));
                 } else if (event.key.code == sf::Keyboard::E) {
-                    game.get_player().add_item(ItemData::inst().make_item("Golden Armor"));
-                } else if (event.key.code == sf::Keyboard::R) {
-                    game.get_player().add_item(ItemData::inst().make_item("Wheat Seeds", 10));
-                } else if (event.key.code == sf::Keyboard::T) {
-                    game.get_player().add_item(ItemData::inst().make_item("Tomato Seeds", 7));
+                    game.try_interact();
                 }
             } else if (event.type == sf::Event::Resized) {
                 window.setView(getLetterboxView( window.getView(), event.size.width, event.size.height ));

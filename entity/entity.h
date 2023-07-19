@@ -32,6 +32,7 @@ public:
 	bool is_solid() const;
 	bool is_interactable() const;
 	virtual std::string get_interact_name() const;
+	virtual void do_interact();
 
 	// texture info
 	int get_sprite() const;

@@ -52,6 +52,16 @@ int main() {
     InvRenderer invrenderer(font, spritesheet, game.get_player());
     invrenderer.set_map(game.get_current_map());
 
+    // setup chest inventory renderer
+    ChestInvRenderer cinvrenderer(font, spritesheet, game.get_player());
+    cinvrenderer.set_map(game.get_current_map());
+    game.set_cinvr(&cinvrenderer);
+
+//    // FOR TESTING ONLY
+//    ChestEntity ce_testing(-1000, -1000, ChestEntity::Type::CHEST);
+//    ce_testing.add_item(ItemData::inst().make_item("Plant", 99));
+//    cinvrenderer.set_chest(&ce_testing);
+
     // create renderstate
     sf::RenderStates render_state(&spritesheet);
 
@@ -86,6 +96,10 @@ int main() {
                     invrenderer.toggle();
                 } else if (event.key.code == sf::Keyboard::Escape) {
                     invrenderer.hide();
+                    cinvrenderer.hide();
+                    cinvrenderer.set_chest(nullptr);
+                } else if (event.key.code == sf::Keyboard::C) {
+                    cinvrenderer.toggle();
                 }
 
                 else if (event.key.code == sf::Keyboard::Q) {
@@ -102,9 +116,11 @@ int main() {
             } else if (event.type == sf::Event::MouseButtonReleased) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     invrenderer.on_mouse_click(window, event.mouseButton.x, event.mouseButton.y);
+                    cinvrenderer.on_mouse_click(window, event.mouseButton.x, event.mouseButton.y);
                 }
             } else if (event.type == sf::Event::MouseMoved) {
                 invrenderer.on_mouse_move(window, event.mouseMove.x, event.mouseMove.y);
+                cinvrenderer.on_mouse_move(window, event.mouseMove.x, event.mouseMove.y);
                 game.on_mouse_move(window, event.mouseMove.x, event.mouseMove.y);
             }
         }
@@ -117,6 +133,7 @@ int main() {
 
         // draw the inventory
         invrenderer.draw(window);
+        cinvrenderer.draw(window);
 
         // finish the frame
         window.display();

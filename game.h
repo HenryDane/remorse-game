@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "player.h"
 #include "map/map.h"
+#include "guis/chestinvrenderer.h"
 
 class Game {
 public:
@@ -22,14 +23,21 @@ public:
     // access functions
     Map* get_current_map();
     Player& get_player();
+
+    // reference functions
+    void set_cinvr(ChestInvRenderer* _cinvr) { this->cinvr = _cinvr; };
 private:
+    enum CollideResult {
+        NONE, DELETE, INTERACT
+    };
     // internal action stuff
-    bool handle_entity_collide(Entity* entity);
+    CollideResult handle_entity_collide(Entity* entity);
 
     // references and render info
     sf::Font& font;
     sf::Text text;
     bool draw_label;
+    ChestInvRenderer* cinvr;
 
     // game data
     std::unordered_map<std::string, Map*> maps;

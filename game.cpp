@@ -95,8 +95,14 @@ void Game::move_player(int dx, int dy) {
             if (e->is_solid()) {
                 has_collided = true;
             }
-            if (handle_entity_collide(e)) {
+            CollideResult cres = handle_entity_collide(e);
+            if (cres == CollideResult::DELETE) {
                 current_map->remove_entity(i);
+            } else if (cres == CollideResult::INTERACT) {
+                if (e->get_type() == Entity::Type::CHEST) {
+                    cinvr->set_chest((ChestEntity*) e);
+                    cinvr->show();
+                }
             }
         }
     }
@@ -177,17 +183,28 @@ Player& Game::get_player() {
     return player;
 }
 
-bool Game::handle_entity_collide(Entity* entity) {
-    if (entity->get_type() == Entity::ITEM) {
-        ItemEntity* ie = (ItemEntity*) entity;
-        if (!ie->is_pickup_ok()) {
-            return false;
+Game::CollideResult Game::handle_entity_collide(Entity* entity) {
+    switch (entity->get_type()) {
+    case Entity::Type::ITEM:
+        {
+            ItemEntity* ie = (ItemEntity*) entity;
+            if (!ie->is_pickup_ok()) {
+                return CollideResult::NONE;
+            }
+            if (player.add_item(ie->get_item())) {
+                ie->make_invalid();
+                return CollideResult::DELETE;
+            }
         }
-        if (player.add_item(ie->get_item())) {
-            ie->make_invalid();
-            return true;
+        break;
+    case Entity::Type::CHEST:
+        {
+            return CollideResult::INTERACT;
         }
+        break;
+    default:
+        break;
     }
 
-    return false;
+    return CollideResult::NONE;
 }

@@ -54,6 +54,10 @@ std::string Entity::get_interact_name() const {
     return "<invalid entity>";
 }
 
+void Entity::do_interact() {
+    return;
+}
+
 int Entity::get_sprite() const {
     return this->sprite;
 }

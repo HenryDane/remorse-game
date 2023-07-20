@@ -1,5 +1,13 @@
 #include "door.h"
 
+std::string DoorEntity::get_interact_name() const {
+    if (this->m_open) {
+        return "Close Door";
+    } else {
+        return "Open Door";
+    }
+}
+
 void DoorEntity::open() {
     this->m_open = true;
     this->solid = false;

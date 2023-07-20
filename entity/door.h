@@ -12,6 +12,7 @@ public:
         Entity(x, y, Entity::DOOR) {
         this->set_sprite(type);
         this->solid = true;
+        this->interactable = toggleable;
 
         this->type = type;
         this->alt = alt;
@@ -22,6 +23,8 @@ public:
         this->m_open = false;
     }
     ~DoorEntity() { };
+
+    std::string get_interact_name() const;
 
     // door stuff
     void open();

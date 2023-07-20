@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "util.h"
+#include "entity/door.h"
 
 Game::Game(std::string path, sf::Font& _f) : font(_f), player(13, 13, 100.0f) {
     xoff = 10;
@@ -245,9 +246,16 @@ void Game::try_interact() {
         if (e->get_x() == player.get_x() + dx &&
             e->get_y() == player.get_y() + dy) {
 
-            if (e->get_type() == Entity::Type::CHEST) {
+            switch(e->get_type()) {
+            case Entity::Type::CHEST:
                 cinvr->set_chest((ChestEntity*) e);
                 cinvr->show();
+                break;
+            case Entity::Type::DOOR:
+                ((DoorEntity*)e)->toggle();
+                break;
+            default:
+                break;
             }
         }
     }

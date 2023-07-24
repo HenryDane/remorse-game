@@ -259,6 +259,8 @@ void Game::try_interact() {
             }
         }
     }
+
+    check_interact();
 }
 
 Map* Game::get_current_map() {

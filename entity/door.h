@@ -12,13 +12,13 @@ public:
         Entity(x, y, Entity::DOOR) {
         this->set_sprite(type);
         this->solid = true;
-        this->interactable = toggleable;
+        this->interactable = true;
 
         this->type = type;
         this->alt = alt;
         this->trig_type = trig_type;
         this->trigger = trigger;
-        this->toggleable = toggleable;
+        this->toggleable = true;
 
         this->m_open = false;
     }

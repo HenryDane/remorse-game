@@ -111,13 +111,13 @@ int Map::get_start_y() {
 }
 
 bool check_tile_type_collideable(uint16_t x) {
-    if (x == 11 || x == 12 || x == 13 || x == 14) {
-        return true;
-    }
-
-    if (x == 24 || x == 25 || x == 26 || x == 48 || x == 50 || x == 72 || x == 73 || x == 74) {
-        return true;
-    }
+//    if (x == 11 || x == 12 || x == 13 || x == 14) {
+//        return true;
+//    }
+//
+//    if (x == 24 || x == 25 || x == 26 || x == 48 || x == 50 || x == 72 || x == 73 || x == 74) {
+//        return true;
+//    }
 
     return false;
 }
@@ -130,15 +130,13 @@ bool Map::is_collideable(int x, int y) {
     int ground = this->ground[y * w + x];
     int border = this->border[y * w + x];
 
-    if (check_tile_type_collideable(border)){
-        return true;
-    }
+    if (border == 65535) border = 0;
+    if (ground == 65535) ground = 0;
 
-    if (ground != 65535) {
-        return check_tile_type_collideable(ground);
-    } else {
-        return check_tile_type_collideable(water);
-    }
+    std::cout << "water=" << water << " ground=" << ground
+        << " border=" << border << std::endl;
+
+    return (ground == 0) || (border > 0);
 }
 
 bool Map::get_portal(int x, int y, Portal** portal) {

@@ -17,8 +17,8 @@ Game::Game(std::string path, sf::Font& _f) : font(_f), player(13, 13, 100.0f) {
     interact_text.setCharacterSize(16);
     interact_text.setFillColor(sf::Color::Black);
     {
-    sf::FloatRect r = interact_text.getLocalBounds();
-    interact_text.setPosition((SCREEN_W - r.width / 2), 500);
+        sf::FloatRect r = interact_text.getLocalBounds();
+        interact_text.setPosition((SCREEN_W - r.width / 2), 500);
     }
 
     draw_label = false;

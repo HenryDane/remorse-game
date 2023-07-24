@@ -1,4 +1,5 @@
 #include "util.h"
+#include <cmath>
 
 sf::View getLetterboxView(sf::View view, int windowWidth, int windowHeight) {
 
@@ -47,4 +48,8 @@ std::vector<std::string> split_by_char(std::string in, char split) {
 
 bool intersect_rect(float x, float y, float sx, float sy, float w, float h) {
     return (x > sx && x < sx + w && y > sy && y < sy + h);
+}
+
+float ease_out_quart(float x) {
+    return 1 - powf(1 - x, 4);
 }

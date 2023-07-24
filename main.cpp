@@ -63,11 +63,6 @@ int main() {
     cinvrenderer.set_map(game.get_current_map());
     game.set_cinvr(&cinvrenderer);
 
-//    // FOR TESTING ONLY
-//    ChestEntity ce_testing(-1000, -1000, ChestEntity::Type::CHEST);
-//    ce_testing.add_item(ItemData::inst().make_item("Plant", 99));
-//    cinvrenderer.set_chest(&ce_testing);
-
     // create renderstate
     sf::RenderStates render_state(&spritesheet);
 

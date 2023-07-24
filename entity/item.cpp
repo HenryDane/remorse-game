@@ -51,8 +51,8 @@ ItemData::ItemData(std::string path) {
 
     // add default def
     // TODO: generalize this
-    item_defs[INVALID_ITEM_NAME] = {INVALID_ITEM_NAME, 373, ItemType::NONE,
-                                    0, 0, 0, 0};
+    item_defs[INVALID_ITEM_NAME] = {INVALID_ITEM_NAME, INVALID_ITEM_SPRITE,
+                                    ItemType::NONE, 0, 0, 0, 0};
 
     // open file
     std::ifstream itemfile(path);
@@ -80,7 +80,7 @@ ItemData::ItemData(std::string path) {
 
             // make the item
             item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]), ItemType::ITEM,
-                                    0, 0, 0, 0};
+                                    0, 0, 0, 0, 0, 0};
         } else if (tokens[0] == "ARMOR") {
             // check that we have the right number of elements
             if (tokens.size() != 4) {
@@ -93,7 +93,7 @@ ItemData::ItemData(std::string path) {
 
             // make the item
             item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]), ItemType::ARMOR,
-                                    props.hp, props.atk, props.def, props.spd};
+                                    props.hp, props.atk, props.def, props.spd, 0, 0};
         } else if (tokens[0] == "HELMET") {
             // check that we have the right number of elements
             if (tokens.size() != 4) {
@@ -106,7 +106,7 @@ ItemData::ItemData(std::string path) {
 
             // make the item
             item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]), ItemType::HELMET,
-                                    props.hp, props.atk, props.def, props.spd};
+                                    props.hp, props.atk, props.def, props.spd, 0, 0};
         }else if (tokens[0] == "WEAPON") {
             // check that we have the right number of elements
             if (tokens.size() != 4) {
@@ -119,8 +119,8 @@ ItemData::ItemData(std::string path) {
 
             // make the item
             item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]), ItemType::WEAPON,
-                                    props.hp, props.atk, props.def, props.spd};
-        } else if (tokens[0] == "CONSUMABLE") {
+                                    props.hp, props.atk, props.def, props.spd, 0, 0};
+        } else if (tokens[0] == "INSTANT_POT") {
             // check that we have the right number of elements
             if (tokens.size() != 4) {
                 std::cout << "ERROR: Malformed item definition on line: " << line_num << std::endl;
@@ -131,8 +131,46 @@ ItemData::ItemData(std::string path) {
             _item_prop_t props = make_properties(tokens[3]);
 
             // make the item
-            item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]), ItemType::CONSUMABLE,
-                                    props.hp, props.atk, props.def, props.spd};
+            item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]),
+                                    ItemType::INSTANT_POT, props.hp, props.atk,
+                                    props.def, props.spd, 0, 0};
+        } else if (tokens[0] == "AOE_POT") {
+            // check that we have the right number of elements
+            if (tokens.size() != 6) {
+                std::cout << "ERROR: Malformed item definition on line: " << line_num << std::endl;
+                exit(1042);
+            }
+
+            // TOKEN;NAME;SPRITE;SHAPE;DURATION;PROP_LIST
+
+            // get the properties
+            _item_prop_t props = make_properties(tokens[5]);
+
+            int shape = std::stoi(tokens[3]);
+            int durat = std::stoi(tokens[4]);
+
+            // make the item
+            item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]),
+                                    ItemType::AOE_POT, props.hp, props.atk,
+                                    props.def, props.spd, shape, durat};
+        } else if (tokens[0] == "EFFECT_POT") {
+            // check that we have the right number of elements
+            if (tokens.size() != 5) {
+                std::cout << "ERROR: Malformed item definition on line: " << line_num << std::endl;
+                exit(1042);
+            }
+
+            // TOKEN;NAME;SPRITE;DURATION;PROP_LIST
+
+            // get the properties
+            _item_prop_t props = make_properties(tokens[4]);
+
+            int durat = std::stoi(tokens[3]);
+
+            // make the item
+            item_defs[tokens[1]] = {tokens[1], std::stoi(tokens[2]),
+                                    ItemType::EFFECT_POT, props.hp, props.atk,
+                                    props.def, props.spd, 0, durat};
         }
 
         line_num++;

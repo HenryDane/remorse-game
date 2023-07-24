@@ -9,7 +9,8 @@
 #define INVALID_ITEM_NAME "__invalid__"
 
 enum class ItemType {
-    NONE, ITEM, CONSUMABLE, ARMOR, WEAPON, HELMET
+    NONE, ITEM, ARMOR, WEAPON, HELMET,
+    INSTANT_POT, AOE_POT, EFFECT_POT,
 };
 
 struct item_def_t {
@@ -19,6 +20,9 @@ struct item_def_t {
 
     // properties
     int hp, atk, def, spd;
+
+    // potions
+    int shape, duration;
 };
 
 class Item;

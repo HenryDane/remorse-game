@@ -133,9 +133,6 @@ bool Map::is_collideable(int x, int y) {
     if (border == 65535) border = 0;
     if (ground == 65535) ground = 0;
 
-    std::cout << "water=" << water << " ground=" << ground
-        << " border=" << border << std::endl;
-
     return (ground == 0) || (border > 0);
 }
 

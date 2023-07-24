@@ -77,13 +77,15 @@ for i, l in enumerate(j['layers']):
                     else:
                         door['name'] = '_'
                     if 'trigger_type' not in props:
-                        print('Warning: Found door with no trigger type.')
-                        continue
+                        #print('Warning: Found door with no trigger type.')
+                        door['trigger_type'] = '__invalid__'
+                    else:
+                        door['trigger_type'] = props['trigger_type']
                     if 'toggleable' not in props:
-                        print('Warning: Found door with no toggleable property.')
-                        continue
-                    door['trigger_type'] = props['trigger_type']
-                    door['toggleable'] = props['toggleable']
+                        #print('Warning: Found door with no toggleable property.')
+                        door['toggleable'] = 0
+                    else:
+                        door['toggleable'] = props['toggleable']
                     objdat['doors'].append(door)
                 elif o['type'] == 'SWITCH':
                     switch = {'x' : o['x'] // 16, 'y' : o['y'] // 16, 'type' : o['gid'] - 1, 'loot': []}
@@ -169,7 +171,7 @@ for chest in objdat['chests']:
     else:    
         r.write('CHEST;' + str(chest['x']) + ',' + str(chest['y']) + ',' + str(chest['type']) + ',')
     for i, l in enumerate(chest['loot']):
-        r.write(l['item'] + ':' + l['value'])
+        r.write(l['item'] + ':' + str(l['value']))
         if (i != len(chest['loot']) - 1):
             r.write('|')
     r.write('\n')

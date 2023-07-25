@@ -284,20 +284,30 @@ void Game::try_hotbar(int idx) {
 
     switch(item.get_type()) {
     case ItemType::INSTANT_POT:
-        player.change_health((float)idata.hp);
-        item.set_count(item.get_count() - 1);
-        if (item.get_count() <= 0) {
-            item.make_invalid();
-        }
+        player.change_health((float) idata.hp);
         break;
     case ItemType::EFFECT_POT:
+        player.add_effect(idata.duration, EntityEffect::EffectType::ATK,
+            idata.atk);
+        player.add_effect(idata.duration, EntityEffect::EffectType::DEF,
+            idata.def);
+        player.add_effect(idata.duration, EntityEffect::EffectType::HP,
+            idata.hp);
+        player.add_effect(idata.duration, EntityEffect::EffectType::SPD,
+            idata.spd);
         break;
     case ItemType::AOE_POT:
         break;
     case ItemType::FOOD:
+        player.change_health((float) idata.hp);
         break;
     default:
-        break;
+        return;
+    }
+
+    item.set_count(item.get_count() - 1);
+    if (item.get_count() <= 0) {
+        item.make_invalid();
     }
 }
 

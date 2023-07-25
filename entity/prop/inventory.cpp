@@ -5,7 +5,7 @@ int PropertyInventory::get_num_items() {
 }
 
 Item& PropertyInventory::get_item_at(int idx, bool& found) {
-    found = (idx > 0 && idx < num_max_slots);
+    found = (idx >= 0 && idx < num_max_slots);
     return items[idx];
 }
 

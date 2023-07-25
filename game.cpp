@@ -263,6 +263,44 @@ void Game::try_interact() {
     check_interact();
 }
 
+void Game::try_hotbar(int idx) {
+    bool found = false;
+    Item& item = player.get_item_at(idx + 4, found);
+
+    if (!found) {
+        std::cout << "No item in slot" << std::endl;
+        return;
+    }
+
+    item_def_t idata;
+    found = ItemData::inst().get_item_data(item, idata);
+
+    if (!found) {
+        std::cout << "Item is undefined: " << item.get_name() << std::endl;
+        return;
+    }
+
+    std::cout << "item=" << item.get_name() << std::endl;
+
+    switch(item.get_type()) {
+    case ItemType::INSTANT_POT:
+        player.change_health((float)idata.hp);
+        item.set_count(item.get_count() - 1);
+        if (item.get_count() <= 0) {
+            item.make_invalid();
+        }
+        break;
+    case ItemType::EFFECT_POT:
+        break;
+    case ItemType::AOE_POT:
+        break;
+    case ItemType::FOOD:
+        break;
+    default:
+        break;
+    }
+}
+
 Map* Game::get_current_map() {
     return current_map;
 }

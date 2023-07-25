@@ -20,6 +20,7 @@ public:
     void move_player(int dx, int dy);
     void on_mouse_move(sf::RenderWindow& window, float x, float y);
     void try_interact();
+    void try_hotbar(int idx);
 
     // access functions
     Map* get_current_map();

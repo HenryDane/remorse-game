@@ -10,7 +10,7 @@
 
 enum class ItemType {
     NONE, ITEM, ARMOR, WEAPON, HELMET,
-    INSTANT_POT, AOE_POT, EFFECT_POT,
+    INSTANT_POT, AOE_POT, EFFECT_POT, FOOD
 };
 
 struct item_def_t {
@@ -45,6 +45,7 @@ public:
     int get_sprite(Item& item);
     int get_sprite(std::string& name);
     bool is_item_defined(std::string name);
+    bool get_item_data(Item& item, item_def_t& data);
 
     // get instance
     static ItemData& inst();

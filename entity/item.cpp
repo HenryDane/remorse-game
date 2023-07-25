@@ -221,15 +221,27 @@ ItemEntity* ItemData::make_item_from_sprite(uint16_t t) {
 // item info
 int ItemData::get_sprite(Item& item) {
     if (!is_item_defined(item.get_name())) {
-        std::cout << "item name=" << item.get_name() << std::endl;
-        item.make_invalid(); // since we got a bad item, reset it
+//        std::cout << "item name=" << item.get_name() << std::endl;
+//        item.make_invalid(); // since we got a bad item, reset it
         return item_defs[INVALID_ITEM_NAME].sprite;
     }
     return item_defs[item.get_name()].sprite;
 }
 
 bool ItemData::is_item_defined(std::string name) {
+    if (name == INVALID_ITEM_NAME) {
+        return false;
+    }
     return item_defs.find(name) != item_defs.end();
+}
+
+bool ItemData::get_item_data(Item& item, item_def_t& data) {
+    if (!is_item_defined(item.get_name())) {
+        return false;
+    }
+
+    data = item_defs[item.get_name()];
+    return true;
 }
 
 ItemData& ItemData::inst() {

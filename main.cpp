@@ -53,6 +53,7 @@ int main() {
     game.get_player().add_item(ItemData::inst().make_item("Golden Armor"));
     game.get_player().add_item(ItemData::inst().make_item("Wheat Seeds", 10));
     game.get_player().add_item(ItemData::inst().make_item("Tomato Seeds", 7));
+    game.get_player().add_item(ItemData::inst().make_item("Health Potion", 1));
 
     // setup inventory renderer
     InvRenderer invrenderer(font, spritesheet, game.get_player());
@@ -103,6 +104,12 @@ int main() {
                     cinvrenderer.toggle();
                 } else if (event.key.code == sf::Keyboard::E) {
                     game.try_interact();
+                } else if (event.key.code == sf::Keyboard::Num1) {
+                    game.try_hotbar(0);
+                } else if (event.key.code == sf::Keyboard::Num2) {
+                    game.try_hotbar(1);
+                } else if (event.key.code == sf::Keyboard::Num3) {
+                    game.try_hotbar(2);
                 }
             } else if (event.type == sf::Event::Resized) {
                 window.setView(getLetterboxView( window.getView(), event.size.width, event.size.height ));
